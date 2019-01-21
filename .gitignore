@@ -1,4 +1,2 @@
 /protected/tmp/*.php
-/protected/model/CONFIG.php
 /install/.installed
-index.html
