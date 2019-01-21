@@ -1,8 +1,9 @@
 <?php
+
 class MainController extends BaseController
 {
     public function actionIndex()
     {
-        $this->name="FlashPHP";
+        $this->project_name = 'SAST财务报销系统';
     }
 }
