@@ -4,6 +4,8 @@ date_default_timezone_set('PRC');
 
 $config = array(
     'rewrite' => array(
+        'account' => 'account/index',
+        'account/<a>' => 'account/<a>',
         '<a>' => 'main/<a>',
         '/' => 'main/index',
     ),
@@ -17,7 +19,7 @@ $domain = array(
             'MYSQL_HOST' => 'localhost',
             'MYSQL_PORT' => '3306',
             'MYSQL_USER' => 'root',
-            'MYSQL_DB' => 'finance',
+            'MYSQL_DB' => 'sast_finance',
             'MYSQL_PASS' => 'root',
             'MYSQL_CHARSET' => 'utf8',
         ),
@@ -30,8 +32,8 @@ $domain = array(
             'MYSQL_HOST' => 'localhost',
             'MYSQL_PORT' => '3306',
             'MYSQL_USER' => 'root',
-            'MYSQL_DB' => 'finance',
-            'MYSQL_PASS' => 'root',
+            'MYSQL_DB' => 'sast_finance',
+            'MYSQL_PASS' => 'codeofwinter',
             'MYSQL_CHARSET' => 'utf8',
         ),
     ),
@@ -43,7 +45,7 @@ $domain = array(
             'MYSQL_HOST' => 'localhost',
             'MYSQL_PORT' => '3306',
             'MYSQL_USER' => 'root',
-            'MYSQL_DB' => 'finance',
+            'MYSQL_DB' => 'sast_finance',
             'MYSQL_PASS' => 'root',
             'MYSQL_CHARSET' => 'utf8',
         ),
