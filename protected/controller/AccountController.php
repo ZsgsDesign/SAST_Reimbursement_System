@@ -90,7 +90,7 @@ class AccountController extends BaseController
             }
 
             $db = new Model('users');
-            $result = $db->find(['email=:emial', ':email' => $email]);
+            $result = $db->find(['email=:email', ':email' => $email]);
             if (empty($result)) {
                 return $this->error('8008', 0);
             }
@@ -99,7 +99,7 @@ class AccountController extends BaseController
 
             $result = $db->find(array('OPENID=:OPENID', ':OPENID' => $OPENID));
             if (empty($result)) {
-                return $this->error('8001', 0);
+                return $this->error('8008', 0);
             } else {
                 $_SESSION['OPENID'] = $OPENID;
                 $this->jump($this->ATSAST_DOMAIN.'/');
@@ -109,7 +109,6 @@ class AccountController extends BaseController
 
     public function actionProfile()
     {
-        $this->info = '//TODO...';
     }
 
     public function actionLogout()

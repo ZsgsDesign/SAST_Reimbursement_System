@@ -9,6 +9,9 @@ if (file_exists('.installed')) {
 }
 
 try {
+    if (!is_readable('sastfinance.lite.sql')) {
+        exit('无读文件权限');
+    }
     $_sql = file_get_contents('sastfinance.lite.sql');
     $_arr = explode(';', $_sql);
     $CONFIG = require '../protected/config.php';
@@ -23,5 +26,8 @@ try {
     exit('数据库初始化错误');
 }
 
+if (!is_writeable('../')) {
+    exit('无写文件权限');
+}
 file_put_contents('.installed', "don't dare me.");
 exit('数据库初始化完毕');

@@ -1,2 +1,4 @@
 /protected/tmp/*.php
 /install/.installed
+web.config
+protected/model/CONFIG.php

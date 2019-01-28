@@ -1,11 +1,11 @@
 <?php
 
 date_default_timezone_set('PRC');
-
+require 'model/CONFIG.php';
 $config = array(
     'rewrite' => array(
-        'account' => 'account/index',
         'account/<a>' => 'account/<a>',
+        'account' => 'account/index',
         '<a>' => 'main/<a>',
         '/' => 'main/index',
     ),
@@ -16,12 +16,12 @@ $domain = array(
         'debug' => 1,
         'maintain' => 0,
         'mysql' => array(
-            'MYSQL_HOST' => 'localhost',
-            'MYSQL_PORT' => '3306',
-            'MYSQL_USER' => 'root',
-            'MYSQL_DB' => 'sast_finance',
-            'MYSQL_PASS' => 'root',
-            'MYSQL_CHARSET' => 'utf8',
+            'MYSQL_HOST' => CONFIG::GET('DEBUG_MYSQL_HOST'),
+            'MYSQL_PORT' => CONFIG::GET('DEBUG_MYSQL_PORT'),
+            'MYSQL_USER' => CONFIG::GET('DEBUG_MYSQL_USER'),
+            'MYSQL_DB' => CONFIG::GET('DEBUG_MYSQL_DB'),
+            'MYSQL_PASS' => CONFIG::GET('DEBUG_MYSQL_PASS'),
+            'MYSQL_CHARSET' => CONFIG::GET('DEBUG_MYSQL_CHARSET'),
         ),
     ),
 
@@ -29,12 +29,12 @@ $domain = array(
         'debug' => 0,
         'maintain' => 0,
         'mysql' => array(
-            'MYSQL_HOST' => 'localhost',
-            'MYSQL_PORT' => '3306',
-            'MYSQL_USER' => 'root',
-            'MYSQL_DB' => 'sast_finance',
-            'MYSQL_PASS' => 'codeofwinter',
-            'MYSQL_CHARSET' => 'utf8',
+            'MYSQL_HOST' => CONFIG::GET('PRO_MYSQL_HOST'),
+            'MYSQL_PORT' => CONFIG::GET('PRO_MYSQL_PORT'),
+            'MYSQL_USER' => CONFIG::GET('PRO_MYSQL_USER'),
+            'MYSQL_DB' => CONFIG::GET('PRO_MYSQL_DB'),
+            'MYSQL_PASS' => CONFIG::GET('PRO_MYSQL_PASS'),
+            'MYSQL_CHARSET' => CONFIG::GET('PRO_MYSQL_CHARSET'),
         ),
     ),
 
@@ -42,12 +42,12 @@ $domain = array(
         'debug' => 1,
         'maintain' => 0,
         'mysql' => array(
-            'MYSQL_HOST' => 'localhost',
-            'MYSQL_PORT' => '3306',
-            'MYSQL_USER' => 'root',
-            'MYSQL_DB' => 'sast_finance',
-            'MYSQL_PASS' => 'root',
-            'MYSQL_CHARSET' => 'utf8',
+            'MYSQL_HOST' => CONFIG::GET('DEBUG_MYSQL_HOST'),
+            'MYSQL_PORT' => CONFIG::GET('DEBUG_MYSQL_PORT'),
+            'MYSQL_USER' => CONFIG::GET('DEBUG_MYSQL_USER'),
+            'MYSQL_DB' => CONFIG::GET('DEBUG_MYSQL_DB'),
+            'MYSQL_PASS' => CONFIG::GET('DEBUG_MYSQL_PASS'),
+            'MYSQL_CHARSET' => CONFIG::GET('DEBUG_MYSQL_CHARSET'),
         ),
     ),
 );

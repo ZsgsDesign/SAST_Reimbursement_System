@@ -18,14 +18,15 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">你好，<{ $display_name }></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownId">
-                        <a class="dropdown-item" href="#">我的资料</a>
+                        <a class="dropdown-item" href="/account/profile">我的资料</a>
                         <a class="dropdown-item" href="#">发起报销</a>
                         <{if $allow_judge}>
-                            <a class="dropdown-item" href="#">审批</a>
+                            <a class="dropdown-item" href="#">开始审批</a>
                         <{/if}>
                         <{if $is_admin}>
                             <a class="dropdown-item" href="#">系统管理</a>
                         <{/if}>
+                        <a class="dropdown-item" href="/account/logout">退出登陆</a>
                     </div>
                 </li>
             <{else}>
