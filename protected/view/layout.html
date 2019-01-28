@@ -19,13 +19,13 @@
 </head>
 
 <body>
-    <{include file="navbar.html" }>
-    <{include file=$__template_file}>
-    <{include file="footer.html" }>
     <script src="<{$ATSAST_CDN}>/js/jquery-3.2.1.min.js"></script>
     <script src="<{$ATSAST_CDN}>/js/popper.min.js"></script>
     <script src="<{$ATSAST_CDN}>/js/snackbar.min.js"></script>
     <script src="<{$ATSAST_CDN}>/js/bootstrap-material-design.js"></script>
+    <{include file="navbar.html" }>
+    <{include file=$__template_file}>
+    <{include file="footer.html" }>
     <script>
         $(document).ready(function () { $('body').bootstrapMaterialDesign(); });
     </script>

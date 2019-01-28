@@ -21,6 +21,7 @@ class AccountController extends BaseController
         return;
     }
 
+    //actionIndex方法处理了登陆注册相关的内容
     public function actionIndex()
     {
         $this->doing = 1;
@@ -109,11 +110,22 @@ class AccountController extends BaseController
 
     public function actionProfile()
     {
+        //用户资料界面
+        //TODO...
     }
 
+    public function actionEditProfile()
+    {
+        //用户资料编辑 呐...
+        //TODO...
+    }
+
+    //退出登录
     public function actionLogout()
     {
         session_destroy();
         $this->jump('/');
     }
+
+    //We can do more.
 }

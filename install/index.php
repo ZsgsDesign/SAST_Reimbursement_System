@@ -4,10 +4,6 @@
  * This is a install script
  * copy from gebi.
  */
-if (file_exists('.installed')) {
-    header('Location: ../'); //Successfully Installed
-}
-
 try {
     if (!is_readable('sastfinance.lite.sql')) {
         exit('无读文件权限');
@@ -15,15 +11,16 @@ try {
     $_sql = file_get_contents('sastfinance.lite.sql');
     $_arr = explode(';', $_sql);
     $CONFIG = require '../protected/config.php';
+    $mysql_config = $CONFIG['mysql'];
+    $dsn = 'mysql:host='.$mysql_config['MYSQL_HOST'].';charset='.$mysql_config['MYSQL_CHARSET'].';port='.$mysql_config['MYSQL_PORT'];
+    $db = new PDO($dsn, $mysql_config['MYSQL_USER'], $mysql_config['MYSQL_PASS']);
 
-    $dsn = 'mysql:host='.$CONFIG['mysql']['MYSQL_HOST'].';charset='.$CONFIG['mysql']['MYSQL_CHARSET'].';port='.$CONFIG['mysql']['MYSQL_PORT'];
-    $db = new PDO($dsn, $CONFIG['mysql']['MYSQL_USER'], $CONFIG['mysql']['MYSQL_PASS']);
     foreach ($_arr as $_value) {
-        $sql = str_replace('<{DB_NAME}>', $CONFIG['mysql']['MYSQL_DB'], $_value);
+        $sql = str_replace('<{DB_NAME}>', $mysql_config['MYSQL_DB'], $_value);
         $db->query($sql.';');
     }
 } catch (Exception $e) {
-    exit('数据库初始化错误');
+    exit($e->getMessage());
 }
 
 if (!is_writeable('../')) {

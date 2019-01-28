@@ -1,0 +1,98 @@
+<style>
+    .card{
+        margin-top: 4rem;
+    }
+    tr{
+        border-top-style: hidden;
+    }
+    textarea{
+        resize: none;
+    }
+    body{
+        margin-bottom: 4rem;
+    }
+</style>
+<div class="container mundb-standard-container">
+    <div class="card">
+        <div class="card-header">
+            发起报销
+        </div>
+        <div class="card-body">
+            <form class="needs-validation" action="?action=initiate" method="post" id="reimburse_info" novalidate>
+                <div class="form-group">
+                    <label for="name" class="bmd-label-floating">报销内容</label>
+                    <input type="text" name="name" class="form-control" id="name" maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label for="remarks" class="bmd-label-floating">备注</label>
+                    <textarea class="form-control" name="remarks" id="remarks" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="department" class="bmd-label-floating">部门</label>
+                    <input type="text" name="department" class="form-control" id="department">
+                </div>
+                <div class="form-group">
+                    <label for="money" class="bmd-label-floating">报销金额</label>
+                    <input type="number" name="money" class="form-control" id="money">
+                </div>
+                <br>
+                <div id="upload_tip" class="alert alert-warning alert-dismissible show text-center" role="alert">
+                    请务必上传发票文件
+                </div>
+                <br>
+                <div class="row">
+                    <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="form-group">
+                            <label id="invoice_tip" class="btn btn-danger" for="invoice">点这里上传发票</label>
+                            <input type="file" class="form-control-file" name="invoice" id="invoice" aria-describedby="invoiceHelp" style="display: none">
+                            <small id="invoiceHelp" class="form-text text-muted"> 请上传清晰的图片文件</small>
+                        </div>
+                    </div>
+                    <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="form-group">
+                            <label class="btn btn-danger" for="transaction_voucher">点这里上传交易凭证</label>
+                            <input type="file" class="form-control-file" name="transaction_voucher" id="transaction_voucher" aria-describedby="transaction_voucherHelp" style="display: none">
+                            <small id="transaction_voucherHelp" class="form-text text-muted"> 请上传清晰的图片文件</small>
+                        </div>
+                    </div>
+                    <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="form-group">
+                            <label class="btn btn-danger" for="declaration">点这里上传申报单</label>
+                            <input type="file" class="form-control-file" name="declaration" id="declaration" aria-describedby="declarationHelp" style="display: none">
+                            <small id="declarationHelp" class="form-text text-muted"> 请上传docx文件</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <a href="/" class="btn btn-default">返回</a>
+                    <button type="submit" class="btn btn-primary">发起</button>
+                </div>
+            </form>
+        </div>
+            
+    </div>
+</div>
+
+<script>
+$('#money').on('change', function () {
+    if($(this).val() != ''){
+        var money = parseInt($(this).val());
+        $('#upload_tip').removeClass("alert-danger");
+        $('#upload_tip').addClass("alert-warning");
+        if(money < 0 ){
+            $('#upload_tip').text("输入的金额不正确");
+        }
+        if(money <= 199 && money >= 0){
+            $('#upload_tip').text("请务必上传发票。");
+        }else if(money <= 499){
+            $('#upload_tip').text("请务必上传发票以及交易凭证(支付截图等...)。");
+        }else if(money <= 999){
+            $('#upload_tip').text("请务必上传发票、交易凭证(支付截图等...)以及申报单。");
+        }else{
+            $('#upload_tip').removeClass("alert-warning");
+            $('#upload_tip').addClass("alert-danger");
+            $('#upload_tip').text("风险过大拒绝交易！");
+        }
+    }
+});
+</script>

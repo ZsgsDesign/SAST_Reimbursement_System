@@ -4,6 +4,8 @@ date_default_timezone_set('PRC');
 require 'model/CONFIG.php';
 $config = array(
     'rewrite' => array(
+        'reimbursement/<a>' => 'reimbursement/<a>',
+        'reimbursement' => 'reimbursement/statisticstotality',
         'account/<a>' => 'account/<a>',
         'account' => 'account/index',
         '<a>' => 'main/<a>',

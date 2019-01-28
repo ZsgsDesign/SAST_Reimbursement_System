@@ -1,7 +1,4 @@
 <style>
-    .card{
-        margin-top: 4rem;
-    }
     tr{
         border-top-style: hidden;
     }
@@ -14,31 +11,63 @@
         <div class="card-body">
             <div class="row">
                 <div class="text-center col-xs-12 col-sm-12 col-md-6 col-lg-5">
-                    <img src="https://gss0.bdstatic.com/94o3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=783d11acbf315c6043956ce9b58aac2e/1c950a7b02087bf49212ea50f1d3572c10dfcf89.jpg" alt="head">
+                    <{if isset($portrait)}> 
+                    <img src="<{$portrait}>" alt="head">
+                    <{else}>
+                    <h1>头像</h1>
+                    <{/if}>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-7">
                     <table class="table table-responsive">
                         <tbody>
                             <tr>
                                 <td>学号</td>
-                                <td>B11111111</td>
+                                <td><{if isset($SID)}><{$SID}><{else}>B11111111<{/if}></td>
+                            </tr>
+                            <tr>
+                                <td>用户名</td>
+                                <td><{if isset($name)}><{$name}><{else}>从不真香<{/if}></td>
                             </tr>
                             <tr>
                                 <td>姓名</td>
-                                <td>王境泽</td>
+                                <td><{if isset($real_name)}><{$real_name}><{else}>王境泽<{/if}></td>
                             </tr>
+                            <{if isset($department)}>
                             <tr>
-                                <td>//</td>
-                                <td>TODO...</td>
+                                <td>部门</td>
+                                <td><{$department_name}></td>
                             </tr>
+                            <{/if}>
+                            <tr>
+                                <td>权限等级</td>
+                                <td><{if isset($permission)}>
+                                         <{if $permission==0}>
+                                         普通用户
+                                         <{elseif $permission==1}>
+                                         审批员
+                                         <{elseif $permission==2}>
+                                         超级管理员
+                                         <{else}>
+                                         错误
+                                         <{/if}>
+                                    <{else}>普通用户
+                                    <{/if}>
+                                </td>
+                            </tr>
+                            <{if isset($permission_until)}>
+                            <tr>
+                                <td>权限有效至</td>
+                                <td><{$permission_until}></td>
+                            </tr>
+                            <{/if}>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
         <div class="card-footer text-muted text-right">
-            <button type="button" class="btn btn-default">返回</button>
-            <button type="button" class="btn btn-primary">编辑资料</button>
+            <a href="/" class="btn btn-default">返回</a>
+            <a href="/account/editprofile" class="btn btn-primary">编辑资料</a>
         </div>
     </div>
 </div>

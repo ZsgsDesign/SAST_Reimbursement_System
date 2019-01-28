@@ -1,3 +1,8 @@
+<style>
+.navbar{
+    margin-bottom: 4rem;
+}
+</style>
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
     <a class="navbar-brand font-weight-bold" href="https://sast.njupt.edu.cn/" title="前往 SAST">SAST</a>
     <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
@@ -19,7 +24,7 @@
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">你好，<{ $display_name }></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownId">
                         <a class="dropdown-item" href="/account/profile">我的资料</a>
-                        <a class="dropdown-item" href="#">发起报销</a>
+                        <a class="dropdown-item" href="/Reimbursement/Initiate">发起报销</a>
                         <{if $allow_judge}>
                             <a class="dropdown-item" href="#">开始审批</a>
                         <{/if}>
