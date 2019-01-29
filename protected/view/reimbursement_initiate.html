@@ -21,19 +21,23 @@
             <form class="needs-validation" action="?action=initiate" method="post" id="reimburse_info" novalidate>
                 <div class="form-group">
                     <label for="name" class="bmd-label-floating">报销内容</label>
-                    <input type="text" name="name" class="form-control" id="name" maxlength="255">
+                    <input type="text" name="name" class="form-control" id="name" maxlength="255" required>
+                    <div class="invalid-feedback">报销内容是必填字段！</div>
                 </div>
                 <div class="form-group">
                     <label for="remarks" class="bmd-label-floating">备注</label>
-                    <textarea class="form-control" name="remarks" id="remarks" rows="4"></textarea>
+                    <textarea class="form-control" name="remarks" id="remarks" rows="4" required></textarea>
+                    <div class="invalid-feedback">备注是必填字段！</div>
                 </div>
                 <div class="form-group">
                     <label for="department" class="bmd-label-floating">部门</label>
-                    <input type="text" name="department" class="form-control" id="department">
+                    <input type="text" name="department" class="form-control" id="department" required> 
+                    <div class="invalid-feedback">部门是必填字段！</div>
                 </div>
                 <div class="form-group">
                     <label for="money" class="bmd-label-floating">报销金额</label>
-                    <input type="number" name="money" class="form-control" id="money">
+                    <input type="number" name="money" class="form-control" id="money" required>
+                    <div class="invalid-feedback">金额是必填字段！</div>
                 </div>
                 <br>
                 <div id="upload_tip" class="alert alert-warning alert-dismissible show text-center" role="alert">
@@ -91,8 +95,23 @@ $('#money').on('change', function () {
         }else{
             $('#upload_tip').removeClass("alert-warning");
             $('#upload_tip').addClass("alert-danger");
-            $('#upload_tip').text("风险过大拒绝交易！");
+            $('#upload_tip').text(<{if isset($GLOBALS['debug'])&&$GLOBALS['debug']}>"有内鬼，交易终止"<{else}>"风险过大拒绝交易！"<{/if}>);
         }
     }
 });
+
+window.addEventListener("load",function() {
+    var forms = document.getElementsByClassName('needs-validation');
+    var validation = Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+            if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+
+    }, false);
+
+}, false);
 </script>

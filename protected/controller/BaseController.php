@@ -18,7 +18,7 @@ class BaseController extends Controller
 
         $this->islogin = is_login();
         $this->is_admin = false;
-        $this->allow_judge = false;
+        $this->allow_judge = true;
 
         if ($this->islogin) {
             $db = new Model('users');

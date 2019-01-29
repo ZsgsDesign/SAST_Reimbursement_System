@@ -27,6 +27,20 @@ CREATE TABLE `users`  (
   PRIMARY KEY (`uid`)
 );
 
+
+-- ----------------------------
+-- Table structure for authority
+-- ----------------------------
+DROP TABLE IF EXISTS `authority`;
+CREATE TABLE `authority`  (
+  `auth_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `uid` int(11) UNSIGNED NOT NULL,
+  `auth` tinyint DEFAULT 0 COMMENT '权限等级?',
+  `forever` tinyint DEFAULT 0 COMMENT '永久权限?',
+  `until` varchar(255) NOT NULL COMMENT '权限有效期',
+  PRIMARY KEY (`auth_id`)
+);
+
 -- ----------------------------
 -- Table structure for reimbursements
 -- ----------------------------
@@ -35,7 +49,7 @@ CREATE TABLE `reimbursements`  (
   `rid` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL COMMENT '发起人',
   `name` varchar(255) NOT NULL COMMENT '报销内容',
-  `remarks` varchar(255) NOT NULL COMMENT '备注',
+  `remarks` varchar(2048) NOT NULL COMMENT '备注',
   `department` int DEFAULT -1 COMMENT '部门',
   `status` tinyint DEFAULT 0 COMMENT '当前状态',
   `money` int(11) NOT NULL COMMENT '金额',
@@ -47,14 +61,15 @@ CREATE TABLE `reimbursements`  (
 );
 
 -- ----------------------------
--- Table structure for approval_log
+-- Table structure for change_log
 -- ----------------------------
-DROP TABLE IF EXISTS `approval_log`;
-CREATE TABLE `approval_log`  (
+DROP TABLE IF EXISTS `change_log`;
+CREATE TABLE `change_log`  (
   `alid` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `uid` int(11) NOT NULL COMMENT '审批人',
-  `rid` int(11) NOT NULL COMMENT '报销记录',
-  `status` tinyint DEFAULT 0 COMMENT '审批后状态',
+  `uid` int(11) NOT NULL COMMENT '操作者',
+  `rid` int(11) NOT NULL COMMENT '报销项目',
+  `change_type` tinyint DEFAULT 0 COMMENT '操作类型',
+  `status` tinyint DEFAULT 0 COMMENT '操作后状态',
   `remarks` varchar(255) NOT NULL COMMENT '备注',
   `time` varchar(255) DEFAULT NULL COMMENT '审批日期',
   PRIMARY KEY (`alid`)

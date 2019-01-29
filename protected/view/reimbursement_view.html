@@ -1,0 +1,94 @@
+<style>
+.btn-fluid{
+    display: block;
+    width: 100%;
+}
+</style>
+<div class="container mundb-standard-container">
+    <div class="card">
+        <div class="card-header">
+             报销项目详情
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>报销内容</td>
+                        <td id="rbm-name"></td>
+                    </tr>
+                    <tr>
+                        <td>备注</td>
+                        <td id="rbm-remarks"><br><br><br></td>
+                    </tr>
+                    <tr>
+                        <td>部门</td>
+                        <td id="rbm-department"></td>
+                    </tr>
+                    <tr>
+                        <td>报销金额</td>
+                        <td id="rbm-money"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="btn-fluid btn btn-primary" type="button" data-toggle="collapse" data-target="#other_info" aria-expanded="false" aria-controls="other_info">
+                查看相关凭证
+            </button>
+            <div class="collapse" id="other_info">
+                <div class="row">
+                    <{if isset($hasInvoice)&&hasInvoice }>
+                    <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <a class="btn btn-primary" href="<{$invoice_src}>" download="发票.pdf" role="button">点我下载发票文件</a>
+                    </div>
+                    <{else}>
+                    <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <p>发票正在送往或已经送达指定地点</p> 
+                    </div>
+                    <{/if}>
+                    <{if isset($hasTransactionVoucher)&&$hasTransactionVoucher}>
+                    <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <img src="<{if isset($transactionVoucher_src)}><{$transactionVoucher_src}><{/if}>" class="img-fluid">
+                        交易凭证<br><small>点击可查看大图</small>
+                    </div>
+                    <{/if}>
+                    <{if isset($hasDeclaration)&&$hasDeclaration}>
+                    <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <a class="btn btn-primary" href="<{$declaration_src}>" download="申报单.docx" role="button">点我下载申报单</a>
+                    </div>
+                    <{/if}>
+                </div>
+            </div>
+            <button class="btn-fluid btn btn-primary" type="button" data-toggle="collapse" data-target="#log" aria-expanded="false" aria-controls="log">
+                查看编辑/审批记录
+            </button>
+            <div class="collapse" id="log">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>操作者</th>
+                            <th>操作备注</th>
+                            <th>操作时间</th>
+                            <th>操作前状态</th>
+                            <th>操作类型</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <{if isset($change_log)}>
+                        <{foreach $change_log as $value}>
+                        <tr>
+                            <td><{ $value['operator'] }></td>
+                            <td><{ $value['remarks'] }></td>
+                            <td><{ $value['time'] }></td>
+                            <td><{ $value['bofore_status'] }></td>
+                            <td><{ $value['type'] }></td>
+                        </tr>
+                        <{/foreach}>
+                        <{/if}>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+</script>

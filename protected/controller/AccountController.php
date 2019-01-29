@@ -25,10 +25,12 @@ class AccountController extends BaseController
     public function actionIndex()
     {
         $this->doing = 1;
+        //判断是不是已经登陆了，是的话跳转到个人资料
         if ($this->islogin) {
             $this->jump('/account/profile');
         }
         $action = arg('action');
+        //判断行为 登陆还是注册呢 都不是就不用处理
         if ($action == 'register') {
             $email = arg('email');
             $password = arg('password');
@@ -56,6 +58,7 @@ class AccountController extends BaseController
             }
 
             $db = new Model('users');
+            $db_authority = new Model('authority');
             $result = $db->find(['email=:email', ':email' => $email]);
             if (!empty($result)) {
                 return $this->error('8005', 1);
@@ -73,13 +76,16 @@ class AccountController extends BaseController
                 'OPENID' => $OPENID,
                 'SID' => $SID,
                 'rtime' => $reg_time,
-                'reg_ip' => $reg_ip,
-                'last_login_ip' => '',
-                'p_level' => 0,
-                'forever' => 0,
-                'until' => $reg_time,
+                'ip' => $reg_ip,
             ];
-            $db->create($user);
+            $uid = $db->create($user);
+            $authority = [
+                'uid' => $uid,
+                'auth' => 0,
+                'forever' => 0,
+                'until' => '',
+            ];
+            $db_authority->create($authority);
             $_SESSION['OPENID'] = $OPENID;
             $this->jump($this->ATSAST_DOMIAN.'/');
         } elseif ($action == 'login') {

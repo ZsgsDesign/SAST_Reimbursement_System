@@ -10,13 +10,17 @@ class ReimbursementController extends BaseController
 
     public function actionApproval()
     {
-        //处理审批员审批报销
+        //处理审批员审批报销,这里可以做成ajax的样子吗？
         //TODO...
     }
 
     public function actionView()
     {
         //查看某条报销的详情
+        //应该有的变量：
+        //$hasTransactionVoucher 有没有交易凭证 布尔型
+        //$transactionVoucher_src 有的话交易凭证的图片源
+        //...其他的请看View内的代码...写起来好麻烦(枯了
         //TODO...
     }
 

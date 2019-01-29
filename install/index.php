@@ -22,9 +22,4 @@ try {
 } catch (Exception $e) {
     exit($e->getMessage());
 }
-
-if (!is_writeable('../')) {
-    exit('无写文件权限');
-}
-file_put_contents('.installed', "don't dare me.");
 exit('数据库初始化完毕');
