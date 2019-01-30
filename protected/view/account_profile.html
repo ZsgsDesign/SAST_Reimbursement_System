@@ -40,12 +40,12 @@
                             <{/if}>
                             <tr>
                                 <td>权限等级</td>
-                                <td><{if isset($permission)}>
-                                         <{if $permission==0}>
+                                <td><{if isset($authority)}>
+                                         <{if $authority==0}>
                                          普通用户
-                                         <{elseif $permission==1}>
+                                         <{elseif $authority==1}>
                                          审批员
-                                         <{elseif $permission==2}>
+                                         <{elseif $authority==2}>
                                          超级管理员
                                          <{else}>
                                          错误
@@ -54,10 +54,10 @@
                                     <{/if}>
                                 </td>
                             </tr>
-                            <{if isset($permission_until)}>
+                            <{if isset($authority_until)}>
                             <tr>
                                 <td>权限有效至</td>
-                                <td><{$permission_until}></td>
+                                <td><{$authority_until}></td>
                             </tr>
                             <{/if}>
                         </tbody>

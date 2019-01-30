@@ -23,13 +23,16 @@ class BaseController extends Controller
         if ($this->islogin) {
             $db = new Model('users');
             $user_info = $db->find(['OPENID' => $_SESSION['OPENID']]);
-            if ($user_info['p_level'] == '2') {
+            $db_auth = new Model('authority');
+            $auth_info = $db_auth->find(['uid=:uid', ':uid' => $user_info['uid']]);
+            if ($auth_info['auth'] == '2') {
                 $this->is_admin = true;
                 $this->allow_judge = true;
-            } elseif ($user_info['p_level'] == '1') {
+            } elseif ($auth_info['auth'] == '1') {
                 $this->allow_judge = true;
             }
             $this->display_name = empty($user_info['real_name']) ? $user_info['name'] : $user_info['real_name'];
+            $this->OPENID = $user_info['OPENID'];
         }
     }
 

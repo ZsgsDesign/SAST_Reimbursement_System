@@ -21,9 +21,6 @@ CREATE TABLE `users`  (
   `portrait` varchar(255) DEFAULT NULL COMMENT '头像',
   `ip` varchar(255) NOT NULL,
   `department` int DEFAULT -1 COMMENT '所属部门',
-  `p_level` varchar(255) NOT NULL COMMENT '权限等级',
-  `forever` tinyint DEFAULT 0 COMMENT '永久权限?',
-  `until` varchar(255) NOT NULL COMMENT '权限有效期',
   PRIMARY KEY (`uid`)
 );
 
@@ -36,7 +33,7 @@ CREATE TABLE `authority`  (
   `auth_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `uid` int(11) UNSIGNED NOT NULL,
   `auth` tinyint DEFAULT 0 COMMENT '权限等级?',
-  `forever` tinyint DEFAULT 0 COMMENT '永久权限?',
+  `forever` tinyint DEFAULT 1 COMMENT '永久权限?',
   `until` varchar(255) NOT NULL COMMENT '权限有效期',
   PRIMARY KEY (`auth_id`)
 );

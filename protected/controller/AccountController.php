@@ -29,6 +29,10 @@ class AccountController extends BaseController
         if ($this->islogin) {
             $this->jump('/account/profile');
         }
+        if (arg('cpw')) {
+            $this->cpw = 1;
+            $this->doing = 0;
+        }
         $action = arg('action');
         //判断行为 登陆还是注册呢 都不是就不用处理
         if ($action == 'register') {
@@ -82,7 +86,7 @@ class AccountController extends BaseController
             $authority = [
                 'uid' => $uid,
                 'auth' => 0,
-                'forever' => 0,
+                'forever' => 1,
                 'until' => '',
             ];
             $db_authority->create($authority);
@@ -116,12 +120,62 @@ class AccountController extends BaseController
 
     public function actionProfile()
     {
-        //用户资料界面
-        //TODO...
+        if (!$this->islogin) {
+            $this->jump('/account');
+        }
+        $db_user = new Model('users');
+        $db_auth = new Model('authority');
+        $user_info = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
+        $auth_info = $db_auth->find(['uid=:uid', ':uid' => $user_info['uid']]);
+        $this->SID = $user_info['SID'];
+        $this->name = $user_info['name'];
+        $this->real_name = empty($user_info['real_name']) ? '未设置' : $user_info['real_name'];
+        if (empty($user_info['department'])) {
+            $this->department = $user_info['department'];
+        }
+        $this->authority = $auth_info['auth'];
+        if ($auth_info['forever'] == 0) {
+            $this->authority_until = $auth_info['until'];
+        }
     }
 
     public function actionEditProfile()
     {
+        $action = arg('action');
+        if ($action == 'change_password') {
+            $old_pw = arg('old-password');
+            $new_pw = arg('new-password');
+            $confirm_pw = arg('confirm-password');
+            if (empty($old_pw) || empty($new_pw) || empty($confirm_pw)) {
+                return $this->cpw_err = '有空参数!';
+            }
+            if ($new_pw !== $confirm_pw) {
+                return $this->cpw_err = '两次密码不一样!';
+            }
+
+            $db = new Model('users');
+            $result = $db->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
+            $old_pw = $old_pw.'SASTSAST+'.(string) date_create_from_format('Y-m-d H:i:s', $result['rtime'])->getTimestamp().'s';
+            $OPENID = sha1(strtolower($result['email']).'@SAST+1s'.md5($old_pw));
+
+            $result_check = $db->find(array('OPENID=:OPENID', ':OPENID' => $OPENID));
+            if (empty($result_check)) {
+                return $this->cpw_err = '密码错误!';
+            } else {
+                $new_pw = $new_pw.'SASTSAST+'.(string) date_create_from_format('Y-m-d H:i:s', $result['rtime'])->getTimestamp().'s';
+                $OPENID = sha1(strtolower($result['email']).'@SAST+1s'.md5($new_pw));
+                $db->update(['OPENID=:OPENID', ':OPENID' => $this->OPENID], [
+                    'password' => md5($new_pw),
+                    'OPENID' => $OPENID,
+                ]);
+                session_destroy();
+                $this->jump('/account?cpw=1');
+            }
+        } elseif ($action == 'upload_portrait') {
+        } elseif ($action == 'edit_profile') {
+            $name = arg('name');
+            $real_name = arg('real_name');
+        }
         //用户资料编辑 呐...
         //TODO...
     }

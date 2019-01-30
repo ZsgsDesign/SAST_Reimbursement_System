@@ -46,13 +46,13 @@
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-7">
                     <div class="container">
-                        <form id="profile-edit" action="?action=edit_profile" method="POST">
-                            <div class="form-group row">
+                        <form id="profile-edit" action="?action=edit_profile" method="POST" class="needs-validation"  novalidate> 
+                            <div class="form-group">
                                 <label for="name" class="bmd-label-floating">用户名</label>
                                 <input type="text" name="name" class="form-control" id="name" required>
                                 <div class="invalid-feedback">用户名不能为空</div>
                             </div>
-                            <div class="form-group row">
+                            <div class="form-group">
                                 <label for="real_name" class="bmd-label-floating">真实姓名</label>
                                 <input type="text" name="real_name" class="form-control" id="real_name">
                             </div>
@@ -79,14 +79,14 @@
                                     </label>
                                 </div>
                             </div>
+                            <div class="card-footer text-muted text-right">
+                                <a class="btn btn-default" href="/account/profile">返回</a>
+                                <button type="submit" class="btn btn-danger">确认编辑</button>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="card-footer text-muted text-right">
-            <a class="btn btn-default" href="/account/profile">返回</a>
-            <button type="button" class="btn btn-danger" onclick="submit_edit()">确认编辑</button>
         </div>
     </div>
     <div class="card" id="cpw-card">
@@ -94,16 +94,46 @@
             更改密码
         </div>
         <div class="card-body">
-            //TODO..
-        </div>
-        <div class="card-footer text-muted text-right">
-            <a class="btn btn-default" href="/account/profile">返回</a>
-            <button type="button" class="btn btn-danger" onclick="submit_edit()">提交更改</button>
+            <form class="needs-validation" action="?action=change_password" method="post" novalidate>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="old-password" class="bmd-label-floating">旧密码</label>
+                        <input type="password" name="old-password" class="form-control" id="old-password" required>
+                        <div class="invalid-feedback">请填写旧密码</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password" class="bmd-label-floating">新密码</label>
+                        <input type="password" name="new-password" class="form-control" id="new-password" required>
+                        <div class="invalid-feedback">密码不能为空</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password" class="bmd-label-floating">确认新密码</label>
+                        <input type="password" name="confirm-password" class="form-control" id="confirm-password" required>
+                        <div class="invalid-feedback">输入不正确</div>
+                    </div>
+                </div>
+                <{if isset($cpw_err)}>
+                <div class="alert alert-danger alert-dismissible show text-center" role="alert">
+                    <{$cpw_err}>
+                </div>
+                <{/if}>
+                <div class="card-footer text-right">
+                    <button type="submit" class="btn btn-danger">确认更改</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 <script>
-function submit_edit(){
-    $('#profile-edit').submit();
-}
+var forms = document.getElementsByClassName('needs-validation');
+var validation = Array.prototype.filter.call(forms, function (form) {
+    form.addEventListener('submit', function (event) {
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+
+}, false);
 </script>

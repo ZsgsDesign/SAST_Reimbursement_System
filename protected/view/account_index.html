@@ -105,6 +105,11 @@
             </div>
                 <div class="tab-content" id="accountTabContent">
                     <div class="tab-pane fade <{ if $doing==0 }>show active<{/if}>" id="login" role="tabpanel" aria-labelledby="login-tab">
+                        <{if isset($cpw)}>
+                        <div id="upload_tip" class="alert alert-success alert-dismissible show text-center" role="alert">
+                            密码修改成功,请重新登录
+                        </div>
+                        <{/if}>
                         <form class="needs-validation" action="?action=login" method="post" id="login_form" novalidate>
                             <div class="card-body">
                                 <div class="form-group">

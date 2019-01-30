@@ -90,11 +90,12 @@
                             审批信息
                         </div>
                         <div class="card-body">
-                            <form class="" action="">
+                            <form action="" method="POST" class="needs-validation" novalidate>
                                 <input type="hidden" name="rid" id="rid">
                                 <div class="form-group">
                                     <label for="remarks" class="bmd-label-floating">批注:</label>
                                     <textarea class="form-control" name="remarks" id="remarks" rows="4" required></textarea>
+                                    <div class="invalid-feedback">必须填写的字段</div>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <div class="radio">
@@ -123,6 +124,19 @@
 </div>
 
 <script>
+    window.addEventListener("load",function() {
+    var forms = document.getElementsByClassName('needs-validation');
+    var validation = Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+            if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+
+    }, false);
+
     $('.list-group-item').on(
         'click',function() {
             var rid = $(this).attr('id').split('-')[1];
@@ -132,4 +146,5 @@
             });
         }
     )
+
 </script>

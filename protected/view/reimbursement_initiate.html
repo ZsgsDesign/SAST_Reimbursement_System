@@ -11,7 +11,18 @@
     body{
         margin-bottom: 4rem;
     }
+    .invoice-choose{
+        display: block;
+    }
+    td{
+        text-align: center;
+        vertical-align:middle;
+    }
+    .row{
+        height: 100%;
+    }
 </style>
+<{if isset($invoice_type)}>
 <div class="container mundb-standard-container">
     <div class="card">
         <div class="card-header">
@@ -19,6 +30,7 @@
         </div>
         <div class="card-body">
             <form class="needs-validation" action="?action=initiate" method="post" id="reimburse_info" novalidate>
+                <input type="hidden" name="invoice_type" value="<{$invoice_type}>">
                 <div class="form-group">
                     <label for="name" class="bmd-label-floating">报销内容</label>
                     <input type="text" name="name" class="form-control" id="name" maxlength="255" required>
@@ -41,10 +53,15 @@
                 </div>
                 <br>
                 <div id="upload_tip" class="alert alert-warning alert-dismissible show text-center" role="alert">
+                    <{if $invoice_type}>
+                    请将纸质发票自行请送往指定地点。
+                    <{else}>
                     请务必上传发票文件
+                    <{/if}>
                 </div>
                 <br>
                 <div class="row">
+                    <{if !$invoice_type}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group">
                             <label id="invoice_tip" class="btn btn-danger" for="invoice">点这里上传发票</label>
@@ -52,6 +69,7 @@
                             <small id="invoiceHelp" class="form-text text-muted"> 请上传清晰的图片文件</small>
                         </div>
                     </div>
+                    <{/if}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group">
                             <label class="btn btn-danger" for="transaction_voucher">点这里上传交易凭证</label>
@@ -68,7 +86,7 @@
                     </div>
                 </div>
                 <div class="text-right">
-                    <a href="/" class="btn btn-default">返回</a>
+                    <a href="/Reimbursement/Initiate" class="btn btn-default">返回</a>
                     <button type="submit" class="btn btn-primary">发起</button>
                 </div>
             </form>
@@ -86,17 +104,32 @@ $('#money').on('change', function () {
         if(money < 0 ){
             $('#upload_tip').text("输入的金额不正确");
         }
+        <{if $invoice_type}>
         if(money <= 199 && money >= 0){
-            $('#upload_tip').text("请务必上传发票。");
+            $('#upload_tip').html("请将纸质发票自行请送往指定地点。");
         }else if(money <= 499){
-            $('#upload_tip').text("请务必上传发票以及交易凭证(支付截图等...)。");
+            $('#upload_tip').html("请将纸质发票自行请送往指定地点。<br>该额度必须上传交易凭证(支付截图等...)。");
         }else if(money <= 999){
-            $('#upload_tip').text("请务必上传发票、交易凭证(支付截图等...)以及申报单。");
+            $('#upload_tip').html("请将纸质发票自行请送往指定地点。<br>该额度必须上传交易凭证(支付截图等...)<br>该额度必须上传申报单。");
         }else{
             $('#upload_tip').removeClass("alert-warning");
             $('#upload_tip').addClass("alert-danger");
             $('#upload_tip').text(<{if isset($GLOBALS['debug'])&&$GLOBALS['debug']}>"有内鬼，交易终止"<{else}>"风险过大拒绝交易！"<{/if}>);
         }
+        <{else}>
+        if(money <= 199 && money >= 0){
+            $('#upload_tip').html("电子发票请务必上传发票文件");
+        }else if(money <= 499){
+            $('#upload_tip').html("电子发票请务必上传发票文件<br>该额度必须上传交易凭证(支付截图等...)。");
+        }else if(money <= 999){
+            $('#upload_tip').html("电子发票请务必上传发票文件<br>该额度必须上传交易凭证(支付截图等...)<br>该额度必须上传申报单。");
+        }else{
+            $('#upload_tip').removeClass("alert-warning");
+            $('#upload_tip').addClass("alert-danger");
+            $('#upload_tip').text(<{if isset($GLOBALS['debug'])&&$GLOBALS['debug']}>"有内鬼，交易终止"<{else}>"风险过大拒绝交易！"<{/if}>);
+        }
+        <{/if}>
+        
     }
 });
 
@@ -115,3 +148,28 @@ window.addEventListener("load",function() {
 
 }, false);
 </script>
+
+
+<{else}>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            请选择发票类型
+        </div>
+        <div class="card-body invoice-type-choose">
+                <table class="table" style="height:100%">
+                    <tbody>
+                        <tr>
+                            <td><a class="invoice-choose btn btn-primary" href="?type=1" role="button">纸质发票</a></td>
+                            <td><a class="invoice-choose btn btn-primary" href="?type=0" role="button">电子发票</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+        </div>
+        <div class="text-right card-footer text-muted">
+            <a  class="btn btn-primary" href="/" role="button">返回首页</a>
+        </div>
+    </div>
+</div>
+
+<{/if}>

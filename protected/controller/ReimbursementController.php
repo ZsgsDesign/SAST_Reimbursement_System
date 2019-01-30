@@ -4,6 +4,9 @@ class ReimbursementController extends BaseController
 {
     public function actionInitiate()
     {
+        if (arg('type') !== null) {
+            $this->invoice_type = arg('type');
+        }
         //处理用户发起报销
         //TODO...
     }
