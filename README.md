@@ -1,18 +1,18 @@
-# SAST_Reimbursement_System
-Reimbursement System for SAST
+# SAST_OA_System
+Office Automation System for SAST
 
 ## NOTICE
 
 For better reference, all materials below would be written in Chinese.
 
-# SAST财务报销系统
+# SAST办公自动化系统
 
-这是SAST财务报销系统的独立源代码，为ATSAST的OA模块源代码的一部分，本系统代码将会被整合于ATSAST的OA模块，但将作为单独部分开源并可独立使用。
+这是SAST办公自动化系统（包含设备借还与财务报销与教室借用）的独立源代码，为ATSAST的OA模块源代码，子模块财务报销系统为后端组Winter of Code项目，设备借还与教室借用为ATSAST项目。
 
-## 部署地址
+## OA系统部署地址
 https://finance.winter.mundb.xyz
 
-## 基本功能
+## 财务报销基本功能
 
 预期实现的基本功能包括但不限于：
 
