@@ -79,5 +79,6 @@ DROP TABLE IF EXISTS `department`;
 CREATE TABLE `department`  (
   `did` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL COMMENT '部门名',
+  `organization` int(11) DEFAULT -1 COMMENT '组织，先不写',
   PRIMARY KEY (`did`)
 );

@@ -5,6 +5,7 @@ require 'model/CONFIG.php';
 $config = array(
     'rewrite' => array(
         'ajax/<a>' => 'ajax/<a>',
+        'reimbursement/view/<rid>' => 'reimbursement/view',
         'reimbursement/<a>' => 'reimbursement/<a>',
         'reimbursement' => 'reimbursement/statisticstotality',
         'account/<a>' => 'account/<a>',

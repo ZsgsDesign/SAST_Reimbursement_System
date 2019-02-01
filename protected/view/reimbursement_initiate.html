@@ -29,7 +29,7 @@
             发起报销
         </div>
         <div class="card-body">
-            <form class="needs-validation" action="?action=initiate" method="post" id="reimburse_info" novalidate>
+            <form class="needs-validation" action="?action=initiate" method="post" id="reimburse_info" enctype="multipart/form-data" novalidate>
                 <input type="hidden" name="invoice_type" value="<{$invoice_type}>">
                 <div class="form-group">
                     <label for="name" class="bmd-label-floating">报销内容</label>
@@ -156,6 +156,14 @@ window.addEventListener("load",function() {
         <div class="card-header">
             请选择发票类型
         </div>
+        <{if isset($err_info) }>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <p><strong><i class="iconfont icon-alert-circle"></i> <{$err_info}></strong></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true"><i class="iconfont icon-close"></i></span>
+            </button>
+        </div>
+        <{/if}>
         <div class="card-body invoice-type-choose">
                 <table class="table" style="height:100%">
                     <tbody>

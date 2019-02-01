@@ -2,3 +2,7 @@
 /install/.installed
 web.config
 protected/model/CONFIG.php
+protected/file/img/*
+protected/file/declaration/*
+protected/file/invoice/*
+protected/file/transaction_voucher/*
