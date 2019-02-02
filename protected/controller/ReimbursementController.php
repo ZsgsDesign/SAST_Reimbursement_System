@@ -141,11 +141,47 @@ class ReimbursementController extends BaseController
 
     public function actionView()
     {
+        if (!$this->islogin) {
+            $this->jump('/account');
+        }
+
+        $db_reimbursements = new Model('reimbursements');
+        $result = $db_reimbursements -> find(['OPENID=:OPENID',':OPENID'=>$this->OPENID]);
+        $this ->rid = $result['rid']; 
+        $this ->uid = $result['uid'];                                                           //发起人
+        $this ->name = $result['name'];                                                         //报销内容
+        $this ->department = $result['department'];                                             //部门
+        $this ->money = $result['money'];                                                       //金额
+
+        $action=arg('action');
+        if ($action == 'other_info') {
+            if(!empty($result['transaction_voucher'])){                                         //交易凭证
+                $hasTransactionVoucher = true;
+                $transactionVoucher_src = $result['transaction_voucher'];
+            }else{
+                $hasTransactionVoucher = false;
+            }
+
+            if(!empty($result['declaration'])){                                                 //申报单
+                $hasDeclaration = true;
+                $declaration_src = $result['declaration'];
+            }else{
+                $hasDeclaration = false;
+            }
+        }
+
+        $action=arg('action');
+        if ($action == 'log') {
+            $this ->before_status = $result['status'];                                          //处理前状态
+            
+            $db_change_log = new Model('change_log');
+            $result = $db_change_log -> find(['rid=:rid',':rid'=>$rid]);
+            $this ->operator = $result['uid'];                                                  //审核人
+            $this ->remarks = $result['remarks'];                                               //备注
+            $this ->time = $result['time'];                                                     //处理时间
+            $this ->type = $result['change_type'];                                              //处理类型
+        }
         //查看某条报销的详情
-        //应该有的变量：
-        //$hasTransactionVoucher 有没有交易凭证 布尔型
-        //$transactionVoucher_src 有的话交易凭证的图片源
-        //...其他的请看View内的代码...写起来好麻烦(枯了
         //TODO...
     }
 
@@ -157,7 +193,37 @@ class ReimbursementController extends BaseController
 
     public function actionStatisticsTotality()
     {
+        if(!$this->islogin){
+            $this->jump('/account');
+        }
+
+        $action=arg('action');
+        if($action == 'statisticsTotality'){
+            $db_reimbursements = new Model('reimbursements');
+            $totality = $db_reimbursements ->findAll();
+            $totalWaiting=0;
+            $totalSuccess=0;
+            $totalFailure=0;
+            $totalHungUp=0;
+            $sumSuccess=0;
+            foreach($totality as $value){
+                if($value['status'] == 0){
+                    $totalWaiting++;
+                }elseif($value['status'] == 1){
+                    $totalSuccess++;
+                    $sumSuccess+=$value['money'];
+                }elseif($value['status'] == 2){
+                    $totalFailure++;
+                }elseif($value['status'] == 3){
+                    $totalHungUp++;
+                }
+            }
+        }
         //处理总体统计详情有关的东西,比如总支出什么的
+        //status:
+        //      0 -> 待审核
+        //      1 -> 已通过
+        //      2 -> 被驳回
         //      3 -> 被挂起
         //TODO...
     }
