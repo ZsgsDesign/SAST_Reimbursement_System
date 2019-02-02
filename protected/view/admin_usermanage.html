@@ -1,0 +1,145 @@
+<div class="container">
+    <{if isset($err_info_all)}>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong><h1><{$err_info_all}></h1></strong>
+        </div>
+        <script>
+            setTimeout('window.location = "/";',1000)
+        </script>
+    <{else}>
+    <div class="card">
+        <div class="card-header">
+            <h4>用户管理</h4>
+        </div>
+        <{if isset($change_auth_info)}>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <{$change_auth_info}>
+        </div>
+        <{/if}>
+        <{if isset($change_auth_err_info)}>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <{$change_auth_err_info}>
+        </div>
+        <{/if}>
+        <div class="card-body">
+            <h5>基本信息</h5>
+            <div class="row">
+                <div class="text-center col-xs-12 col-sm-12 col-md-6 col-lg-5">
+                    <{if isset($portrait)}> 
+                    <img class="img-fluid" src="/file/img/<{$portrait}>.jpg" alt="head">
+                    <{else}>
+                    <h1>头像</h1>
+                    <{/if}>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-7">
+                    <table class="table table-responsive">
+                        <tbody>
+                            <tr>
+                                <td>学号</td>
+                                <td><{if isset($SID)}><{$SID}><{/if}></td>
+                            </tr>
+                            <tr>
+                                <td>用户名</td>
+                                <td><{if isset($name)}><{$name}><{/if}></td>
+                            </tr>
+                            <tr>
+                                <td>姓名</td>
+                                <td><{if isset($real_name)}><{$real_name}><{/if}></td>
+                            </tr>
+                            <{if isset($department_name)}>
+                            <tr>
+                                <td>部门</td>
+                                <td><{$department_name}></td>
+                            </tr>
+                            <{/if}>
+                            <tr>
+                                <td>权限等级</td>
+                                <td><{if isset($authority)}>
+                                            <{if $authority==0}>
+                                            普通用户
+                                            <{elseif $authority==1}>
+                                            审批员
+                                            <{elseif $authority==2}>
+                                            超级管理员
+                                            <{else}>
+                                            错误
+                                            <{/if}>
+                                    <{else}>普通用户
+                                    <{/if}>
+                                </td>
+                            </tr>
+                            <{if isset($authority_until)}>
+                            <tr>
+                                <td>权限有效至</td>
+                                <td><{$authority_until}></td>
+                            </tr>
+                            <{/if}>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <hr>
+            <h5>其他信息</h5>
+            <div class="container">
+                <table class="table table-responsive">
+                    <tbody>
+                        <tr>
+                            <td>注册时间</td>
+                            <td><{if isset($rtime)}><{$rtime}><{/if}></td>
+                        </tr>
+                        <tr>
+                            <td>注册ip</td>
+                            <td><{if isset($ip)}><{$ip}><{/if}></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <hr>
+            <h5>权限修改</h5>
+            <div class="container">
+                <form method="POST" action="?action=change_auth">
+                    <input type="hidden" name="uid" id="uid" class="form-control" value="<{$uid}>">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label for="auth">权限级别:</label>
+                            <select class="custom-select" name="auth" id="auth" required>
+                                <option selected></option>
+                                <option value="0">普通用户</option>
+                                <option value="1">审批员</option>
+                                <option value="2">管理员</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label for="forever">
+                                <input class="form-control" type="checkbox" name="forever" id="forever" onclick="isForever()"><span>永久权限</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="until">权限有效至</label>
+                      <input class="form-control" type="date" name="until" id="until" required>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-danger">提交修改</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card-footer text-muted text-right">
+            <a class="btn btn-primary" href="/admin/umanage" role="button">返回</a>
+        </div>
+    </div>
+    <{/if}>
+</div>
+
+<script>
+function isForever(){
+    if($('#forever').prop('checked')){
+        $('#until').attr('disabled',true);
+    }else{
+        $('#until').attr('disabled',false);
+    }
+}
+</script>

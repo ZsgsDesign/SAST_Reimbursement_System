@@ -12,10 +12,15 @@
             个人资料 - 编辑
         </div>
         <div class="card-body">
+            <{if isset($err_info)}>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <{$err_info}>
+            </div>
+            <{/if}>
             <div class="row">
                 <div class="text-center col-xs-12 col-sm-12 col-md-6 col-lg-5">
                     <{if isset($portrait)}> 
-                    <img src="<{$portrait}>" alt="head">
+                    <img class="img-fluid" src="/file/img/<{$portrait}>.jpg" alt="head">
                     <{else}>
                     <h1>头像</h1>
                     <{/if}>
@@ -26,11 +31,11 @@
                     </p>
                     <div class="collapse" id="portrait_upload">
                         <div class="container">
-                            <form action="?action=upload_portrait" method="POST">
+                            <form action="?action=upload_portrait" method="POST" enctype="multipart/form-data" >
                                 <div class="form-group">
                                     <label class="btn btn-default" for="portrait">浏览本地文件</label>
                                     <input type="file" class="form-control-file" name="portrait" id="portrait" placeholder="" aria-describedby="fileHelpId" style="display:none" required>
-                                    <small id="fileHelpId" class="form-text text-muted">支持.jpg .png等图片文件</small>
+                                    <small id="fileHelpId" class="form-text text-muted">仅支持.jpg图片文件</small>
                                 </div>
                                 <div class="form-group row">
                                     <div class="offset-sm-2 col-sm-10">
@@ -40,44 +45,22 @@
                             </form>
                         </div>
                     </div>
-                    <{if isset($portrait_upload_info)}>
-                    <small class="<{if isset($portrait_upload_info_type)}><{$portrait_upload_info_type}><{else}>text-primary<{/if}>"><{$portrait_upload_info}></small>
-                    <{/if}>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-7">
                     <div class="container">
                         <form id="profile-edit" action="?action=edit_profile" method="POST" class="needs-validation"  novalidate> 
                             <div class="form-group">
                                 <label for="name" class="bmd-label-floating">用户名</label>
-                                <input type="text" name="name" class="form-control" id="name" required>
+                                <input type="text" name="name" class="form-control" id="name" value="<{if isset($name)}><{$name}><{/if}>" required>
                                 <div class="invalid-feedback">用户名不能为空</div>
                             </div>
                             <div class="form-group">
                                 <label for="real_name" class="bmd-label-floating">真实姓名</label>
-                                <input type="text" name="real_name" class="form-control" id="real_name">
+                                <input type="text" name="real_name" class="form-control" id="real_name"  value="<{if isset($real_name)}><{$real_name}><{/if}>" >
                             </div>
-                            
-                            <div class="form-group" style="padding-top: 2.75rem;">
-                                <label for="gender" class="bmd-label-floating">性别</label>
-                    
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="gender" id="gender_0" value="0" <{if isset($gender)&&gender==0}>checked
-                                        <{/if}> required>保密
-                                    </label>
-                                </div>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="gender" id="gender_1" value="1" <{if isset($gender)&&gender==1}>checked
-                                        <{/if}> required>男
-                                    </label>
-                                </div>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="gender" id="gender_2" value="2" <{if isset($gender)&&gender==2}>checked
-                                        <{/if}> required>女
-                                    </label>
-                                </div>
+                            <div class="form-group">
+                                <label for="department" class="bmd-label-floating">所在部门</label>
+                                <input type="text" name="department" class="form-control" id="department"  value="<{if isset($department_name)}><{$department_name}><{/if}>" >
                             </div>
                             <div class="card-footer text-muted text-right">
                                 <a class="btn btn-default" href="/account/profile">返回</a>

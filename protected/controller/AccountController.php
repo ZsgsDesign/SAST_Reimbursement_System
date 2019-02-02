@@ -129,9 +129,17 @@ class AccountController extends BaseController
         $auth_info = $db_auth->find(['uid=:uid', ':uid' => $user_info['uid']]);
         $this->SID = $user_info['SID'];
         $this->name = $user_info['name'];
+        if (!empty($user_info['portrait'])) {
+            $this->portrait = $user_info['portrait'];
+        }
         $this->real_name = empty($user_info['real_name']) ? '未设置' : $user_info['real_name'];
-        if (empty($user_info['department'])) {
-            $this->department = $user_info['department'];
+        if (!empty($user_info['department'])) {
+            $db_department = new Model('department');
+            $department = $user_info['department'];
+            $d = $db_department->find(['did=:did', ':did' => $department]);
+            if (!empty($d)) {
+                $this->department_name = $d['name'];
+            }
         }
         $this->authority = $auth_info['auth'];
         if ($auth_info['forever'] == 0) {
@@ -141,6 +149,15 @@ class AccountController extends BaseController
 
     public function actionEditProfile()
     {
+        $db_user = new Model('users');
+        $user_info = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
+        $this->name = $user_info['name'];
+        if (!empty($user_info['real_name'])) {
+            $this->real_name = $user_info['real_name'];
+        }
+        if (!empty($user_info['portrait'])) {
+            $this->portrait = $user_info['portrait'];
+        }
         $action = arg('action');
         if ($action == 'change_password') {
             $old_pw = arg('old-password');
@@ -153,18 +170,17 @@ class AccountController extends BaseController
                 return $this->cpw_err = '两次密码不一样!';
             }
 
-            $db = new Model('users');
-            $result = $db->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
+            $result = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
             $old_pw = $old_pw.'SASTSAST+'.(string) date_create_from_format('Y-m-d H:i:s', $result['rtime'])->getTimestamp().'s';
             $OPENID = sha1(strtolower($result['email']).'@SAST+1s'.md5($old_pw));
 
-            $result_check = $db->find(array('OPENID=:OPENID', ':OPENID' => $OPENID));
+            $result_check = $db_user->find(array('OPENID=:OPENID', ':OPENID' => $OPENID));
             if (empty($result_check)) {
                 return $this->cpw_err = '密码错误!';
             } else {
                 $new_pw = $new_pw.'SASTSAST+'.(string) date_create_from_format('Y-m-d H:i:s', $result['rtime'])->getTimestamp().'s';
                 $OPENID = sha1(strtolower($result['email']).'@SAST+1s'.md5($new_pw));
-                $db->update(['OPENID=:OPENID', ':OPENID' => $this->OPENID], [
+                $db_user->update(['OPENID=:OPENID', ':OPENID' => $this->OPENID], [
                     'password' => md5($new_pw),
                     'OPENID' => $OPENID,
                 ]);
@@ -172,11 +188,32 @@ class AccountController extends BaseController
                 $this->jump('/account?cpw=1');
             }
         } elseif ($action == 'upload_portrait') {
+            if (empty($_FILES['portrait']['name'])) {
+                return $this->err_info = '没有上传文件,请不要皮这个系统';
+            }
+
+            $filename = $_FILES['portrait']['name'];
+            $extension = explode('.', $filename);
+            $extension = $extension[count($extension) - 1];
+            if ($extension != 'jpg') {
+                return $this->err_info = '上传头像只支持jpg文件';
+            }
+            $hash = md5_file($_FILES['portrait']['tmp_name']);
+            $db_user->update(['OPENID=:OPENID', ':OPENID' => $this->OPENID], [
+                'portrait' => $hash,
+            ]);
+            move_uploaded_file($_FILES['portrait']['tmp_name'], APP_DIR.'/file/img/'.$hash.'.jpg');
         } elseif ($action == 'edit_profile') {
             $name = arg('name');
             $real_name = arg('real_name');
+            $department = arg('department');
+            if (empty($name)) {
+                return $this->err_info = '用户名为必填项!';
+            }
         }
-        //用户资料编辑 呐...
+        //输入了三个东西，包括部门名 找一下部门表里面有没有记录，有的话就通过 不然报错
+        //没有问题的话直接update，然后jump到profile页面就可以了
+        //记得储存的时候要从部门表里把did拿出来，users表的department字段是int类型的
         //TODO...
     }
 
