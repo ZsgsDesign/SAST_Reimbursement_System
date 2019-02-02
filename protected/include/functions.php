@@ -1,5 +1,7 @@
 <?php
 
+ini_set('timezone','Asia/Shanghai');
+
 function getIP()
 {
     if (@$_SERVER['HTTP_X_FORWARDED_FOR']) {
@@ -38,5 +40,30 @@ function valid_OPENID($OPENID)
         return false;
     } else {
         return true;
+    }
+}
+
+//通过uid判断用户是否有管理员权限
+function valid_auth($uid)
+{
+    $db_authority = new Model('Authority');
+    $result = $db_authority->find(['uid=:uid','uid' => $uid]);
+    $auth = $result['auth'];
+    $forever = $result['forever'];
+    $until = strtotime($result['until']);
+    
+    $currentTime = time();
+
+    if ($auth == 1 || $auth == 2) {
+        if ($forever == 1) {
+            return true;
+        } elseif ($currentTime <= $until) {
+            return true;
+        } else {
+            $db_authority->update(['uid=:uid',':uid'=>$uid],['auth'=>'0','forever'=>'1']);
+            return false;
+        }
+    } else {
+        return false;
     }
 }

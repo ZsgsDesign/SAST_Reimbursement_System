@@ -145,42 +145,59 @@ class ReimbursementController extends BaseController
             $this->jump('/account');
         }
 
+        $db_user = new Model('users');
+        $user_info = $db_user -> find(['OPENID=:OPENID',':OPENID'=>$this->OPENID]);
+        $uid = $user_info['uid'];
+
         $db_reimbursements = new Model('reimbursements');
-        $result = $db_reimbursements -> find(['OPENID=:OPENID',':OPENID'=>$this->OPENID]);
-        $this ->rid = $result['rid']; 
-        $this ->uid = $result['uid'];                                                           //发起人
-        $this ->name = $result['name'];                                                         //报销内容
-        $this ->department = $result['department'];                                             //部门
-        $this ->money = $result['money'];                                                       //金额
+        $reimDetails = $db_reimbursements -> findAll();
 
-        $action=arg('action');
-        if ($action == 'other_info') {
-            if(!empty($result['transaction_voucher'])){                                         //交易凭证
-                $hasTransactionVoucher = true;
-                $transactionVoucher_src = $result['transaction_voucher'];
+        $rid=arg('rid');
+        if ($rid == null) {
+            if (valid_auth($uid) == true) {
             }else{
-                $hasTransactionVoucher = false;
+                foreach ($reimDetails as $value) {
+                    if($value['uid']!=$uid){
+                        array_splice($value);
+                    }
+                }
             }
-
-            if(!empty($result['declaration'])){                                                 //申报单
-                $hasDeclaration = true;
-                $declaration_src = $result['declaration'];
+            $i=0;
+            $j=0;
+            foreach($reimDetails as $value){
+                if($value['invoice']==null){
+                    $hasInvoice[i]=0;
+                    $i++;
+                }else{
+                    $hasInvoice[i]=1;
+                    $i++;
+                }
+                if($value['transaction_voucher']==null){
+                    $hasTransactionVoucher[j]=0;
+                    $j++;
+                }else{
+                    $hasTransactionVoucher[j]=1;
+                    $j++;
+                }
+            }
+        }else{
+            foreach($reimDetails as $value){
+                if($value['rid'] != $rid){
+                    array_splice($value);
+                }
+            }
+            if($reimDetails['invoice']==null){
+                $hasInvoice=0;
             }else{
-                $hasDeclaration = false;
+                $hasInvoice=1;
+            }
+            if($reimDetails['transaction_voucher']==null){
+                $hasTransactionVoucher=0;
+            }else{
+                $hasTransactionVoucher=1;
             }
         }
-
-        $action=arg('action');
-        if ($action == 'log') {
-            $this ->before_status = $result['status'];                                          //处理前状态
-            
-            $db_change_log = new Model('change_log');
-            $result = $db_change_log -> find(['rid=:rid',':rid'=>$rid]);
-            $this ->operator = $result['uid'];                                                  //审核人
-            $this ->remarks = $result['remarks'];                                               //备注
-            $this ->time = $result['time'];                                                     //处理时间
-            $this ->type = $result['change_type'];                                              //处理类型
-        }
+        return $this->list=array($reimDetails,$hasInvoice,$hasTransactionVoucher);
         //查看某条报销的详情
         //TODO...
     }
