@@ -158,6 +158,7 @@ class ReimbursementController extends BaseController
     public function actionStatisticsTotality()
     {
         //处理总体统计详情有关的东西,比如总支出什么的
+        //      3 -> 被挂起
         //TODO...
     }
 
