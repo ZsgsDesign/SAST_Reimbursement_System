@@ -139,7 +139,7 @@ class ReimbursementController extends BaseController
         //TODO...
     }
 
-    public function actionView()
+    public function actionViewDetail()
     {
         if (!$this->islogin) {
             $this->jump('/account');
@@ -152,9 +152,9 @@ class ReimbursementController extends BaseController
         $db_reimbursements = new Model('reimbursements');
         $reimDetails = $db_reimbursements -> findAll();
 
-        $rid=arg('rid');
+        $rid=arg('arg');
         if ($rid == null) {
-            if (valid_auth($uid) == true) {
+            if (valid_auth($uid)) {
             }else{
                 foreach ($reimDetails as $value) {
                     if($value['uid']!=$uid){
@@ -180,26 +180,60 @@ class ReimbursementController extends BaseController
                     $j++;
                 }
             }
-        }else{
+        }elseif(!empty($reimDetails['rid'])){
             foreach($reimDetails as $value){
                 if($value['rid'] != $rid){
                     array_splice($value);
                 }
             }
             if($reimDetails['invoice']==null){
-                $hasInvoice=0;
+                $hasInvoice=false;
             }else{
-                $hasInvoice=1;
+                $hasInvoice=true;
             }
             if($reimDetails['transaction_voucher']==null){
-                $hasTransactionVoucher=0;
+                $hasTransactionVoucher=false;
             }else{
-                $hasTransactionVoucher=1;
+                $hasTransactionVoucher=true;
             }
+            if($reimDetails == null){
+                return $this->err_info='当前并没有报销记录哦';
+            }else{
+                return $this->list=array($reimDetails,$hasInvoice,$hasTransactionVoucher);
+            }
+        }else{
+            return $this->err_info = '无相关记录';
         }
-        return $this->list=array($reimDetails,$hasInvoice,$hasTransactionVoucher);
         //查看某条报销的详情
         //TODO...
+    }
+
+    public function actionViewChangelog(){
+        if(!$this->islogin){
+            $this->jump('/account');
+        }
+
+        $db_user = new Model('users');
+        $user_info = $db_user -> find(['OPENID=:OPENID',':OPENID'=>$this->OPENID]);
+        $currentUID = $user_info['uid'];
+
+        if(valid_auth($currentUID) == true){
+            $rid=arg('rid');
+            $db_change_log = new Model('change_log');
+            $Change_Log = $db_change_log ->findAll(['rid=:rid',':rid'=>$rid]);
+        }else{
+            $rid=arg('rid');
+            $db_reimbursements = new Model('reimbursements');
+            $uid = $db_reimbursements ->find(['rid=:rid',':rid'=>$rid]);
+            if($currentUID == $uid){
+                $db_change_log = new Model('change_log');
+                $Change_Log = $db_change_log ->findAll(['rid=:rid',':rid'=>$rid]);
+            }else{
+                return $this->err_info = '抱歉，不是你发起的报销，无权查看';
+            }
+        }
+        return $this->liset = $Change_Log;
+        //查看某条报销的操作记录
     }
 
     public function actionEdit()
@@ -210,38 +244,12 @@ class ReimbursementController extends BaseController
 
     public function actionStatisticsTotality()
     {
-        if(!$this->islogin){
-            $this->jump('/account');
-        }
-
-        $action=arg('action');
-        if($action == 'statisticsTotality'){
-            $db_reimbursements = new Model('reimbursements');
-            $totality = $db_reimbursements ->findAll();
-            $totalWaiting=0;
-            $totalSuccess=0;
-            $totalFailure=0;
-            $totalHungUp=0;
-            $sumSuccess=0;
-            foreach($totality as $value){
-                if($value['status'] == 0){
-                    $totalWaiting++;
-                }elseif($value['status'] == 1){
-                    $totalSuccess++;
-                    $sumSuccess+=$value['money'];
-                }elseif($value['status'] == 2){
-                    $totalFailure++;
-                }elseif($value['status'] == 3){
-                    $totalHungUp++;
-                }
-            }
-        }
         //处理总体统计详情有关的东西,比如总支出什么的
         //status:
-        //      0 -> 待审核
-        //      1 -> 已通过
-        //      2 -> 被驳回
-        //      3 -> 被挂起
+        //0 -> 待审核
+        //1 -> 已通过
+        //2 -> 被驳回
+        //3 -> 被挂起
         //TODO...
     }
 
