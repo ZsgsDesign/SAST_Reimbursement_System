@@ -17,7 +17,6 @@ class BaseController extends Controller
         $this->ATSAST_DOMAIN = $GLOBALS['http_scheme'].$_SERVER['HTTP_HOST'];
 
         $this->islogin = is_login();
-
         $this->is_admin = false;
         $this->is_judge = false;
 

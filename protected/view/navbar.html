@@ -28,8 +28,11 @@
                         <{if $is_judge}>
                             <a class="dropdown-item" href="/Reimbursement/approval">开始审批</a>
                         <{/if}>
+                        <{if $allow_judge||$isadmin}>
+                            <a class="dropdown-item" href="/Reimbursement/Stat">统计</a>
+                        <{/if}>
                         <{if $is_admin}>
-                            <a class="dropdown-item" href="#">系统管理</a>
+                            <a class="dropdown-item" href="/admin">系统管理</a>
                         <{/if}>
                         <a class="dropdown-item" href="/account/logout">退出登陆</a>
                     </div>

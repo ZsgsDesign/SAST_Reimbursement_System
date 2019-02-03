@@ -90,7 +90,7 @@ class ReimbursementController extends BaseController
 
                 $hash = md5_file($_FILES['invoice']['tmp_name']);
                 $RBM['invoice'] = $hash;
-                move_uploaded_file($_FILES['invoice']['tmp_name'], APP_DIR.'/protected/file/invoice/'.$hash.'.pdf');
+                move_uploaded_file($_FILES['invoice']['tmp_name'], APP_DIR.'/file/invoice/'.$hash.'.pdf');
             }
 
             //处理上传的交易凭证
@@ -105,7 +105,7 @@ class ReimbursementController extends BaseController
 
                 $hash = md5_file($_FILES['transaction_voucher']['tmp_name']);
                 $RBM['transaction_voucher'] = $hash;
-                move_uploaded_file($_FILES['transaction_voucher']['tmp_name'], APP_DIR.'/protected/file/transaction_voucher/'.$hash.$extension);
+                move_uploaded_file($_FILES['transaction_voucher']['tmp_name'], APP_DIR.'/file/transaction_voucher/'.$hash.$extension);
             }
 
             //处理上传的申报单
@@ -120,7 +120,7 @@ class ReimbursementController extends BaseController
 
                 $hash = md5_file($_FILES['declaration']['tmp_name']);
                 $RBM['declaration'] = $hash;
-                move_uploaded_file($_FILES['declaration']['tmp_name'], APP_DIR.'/protected/file/declaration/'.$hash.$extension);
+                move_uploaded_file($_FILES['declaration']['tmp_name'], APP_DIR.'/file/declaration/'.$hash.$extension);
             }
             //存入数据库
             $db_rbm = new Model('reimbursements');

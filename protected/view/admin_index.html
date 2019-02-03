@@ -1,0 +1,73 @@
+<style>
+tr{
+    cursor: pointer;
+}
+</style>
+<div class="container">
+    <h3>报销系统 - 管理</h3><br>
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+                <a class="nav-link <{if $action=='umanage'||$action=='usearch'}>active<{/if}>" href="?action=umanage">用户管理</a>
+            </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <{if $action=='umanage'||$action=='usearch'}>
+            <form class="text-right" method="POST" action="?action=usearch">
+                <div class="form-group">
+                    <label for="search_key">查找用户</label>
+                    <input type="text" name="search_key" id="search_key" class="form-control" placeholder="学号、姓名、用户名">
+                </div>
+            </form>
+            <{if $action=='umanage'}>
+            <small>共 <{$count}> 条记录, <{$max_page}> 页,当前是第 <{$page}> 页</small>
+            <{elseif $action=='usearch'}>
+            <small>共 <{$count}> 条符合条件的记录</small>
+            <{/if}>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>学号</th>
+                        <th>真实姓名</th>
+                        <th>用户名</th>
+                        <th>权限</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <{if isset($user_list)}>
+                    <{foreach $user_list as $user}>
+                    <tr id="user-<{$user['uid']}>">
+                        <td><{$user['SID']}></td>
+                        <td><{$user['real_name']}></td>
+                        <td><{$user['name']}></td>
+                        <td><{$user['auth']}></td>
+                    </tr>
+                    <{/foreach}>
+                    <{/if}>
+                </tbody>
+            </table>
+                <{if $action=='umanage'}>
+                <ul class="text-center pagination">
+                    <li class="page-item"><a class="page-link" href="?action=umanagep=fore"><strong>&lt;</strong></a></li>
+                    <{foreach $page_list as $value}>
+                    <li class="page-item"><a class="page-link" href="?action=umanage&p=<{$value}>"><{$value}></a></li>
+                    <{/foreach}>
+                    <li class="page-item"><a class="page-link" href="?action=umanagep=next"><strong>&gt;</strong></a></li>
+                    
+                </ul>
+                <{/if}>
+            <{/if}>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+$('tr').on('click',function () {
+    var uid = $(this).attr('id').split('-');
+    uid = uid[1];
+    window.location = "/admin/"+uid+"/usermanage";
+});
+</script>
