@@ -141,12 +141,53 @@ class ReimbursementController extends BaseController
 
     public function actionView()
     {
-        //查看某条报销的详情
-        //应该有的变量：
-        //$hasTransactionVoucher 有没有交易凭证 布尔型
-        //$transactionVoucher_src 有的话交易凭证的图片源
-        //...其他的请看View内的代码...写起来好麻烦(枯了
-        //TODO...
+        if (!$this->islogin) {
+            $this->jump('/account');
+        }
+
+        $db_user = new Model('users');
+        $db_department = new Model('department');
+        $user_info = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
+        $uid = $user_info['uid'];
+
+        $rid = arg('rid');
+        if ($rid == null) {
+            $this->display_type = 'list';
+            $db_reimbursements = new Model('reimbursements');
+
+            if ($user_info['auth'] != 0) {
+                $reim_list = $db_reimbursements->findAll();
+            } else {
+                $reim_list = $db_reimbursements->findAll(['uid=:uid', ':uid' => $uid]);
+            }
+
+            $this->list = $reim_list;
+        } else {
+            $this->display_type = 'single';
+            $db_reimbursements - new Model('reimbursements');
+            $reimDetails = $db_reimbursements->findAll(['rid=:rid', ':rid' => $rid]);
+
+            if ($reimDetails == null) {
+                return $this->err_info = '没有找到这项报销记录哦';
+            }
+
+            if ($reimDetails['invoice'] == null) {
+                $reimDetails['hasInvoice'] = false;
+            } else {
+                $reimDetails['hasInvoice'] = true;
+            }
+            if ($reimDetails['transaction_voucher'] == null) {
+                $reimDetails['hasTransactionVoucher'] = false;
+            } else {
+                $reimDetails['hasTransactionVoucher'] = true;
+            }
+
+            $db_change_log = new Model('change_log');
+            $change_log = $db_change_log->findAll(['rid=:rid', ':rid' => $rid]);
+
+            $reimDetails['change_log'] = $change_log;
+            $this->reimDetails = $reimDetails;
+        }
     }
 
     public function actionEdit()
@@ -158,6 +199,11 @@ class ReimbursementController extends BaseController
     public function actionStatisticsTotality()
     {
         //处理总体统计详情有关的东西,比如总支出什么的
+        //status:
+        //0 -> 待审核
+        //1 -> 已通过
+        //2 -> 被驳回
+        //3 -> 被挂起
         //TODO...
     }
 

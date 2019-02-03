@@ -25,7 +25,7 @@
                     <div class="dropdown-menu" aria-labelledby="dropdownId">
                         <a class="dropdown-item" href="/account/profile">我的资料</a>
                         <a class="dropdown-item" href="/Reimbursement/Initiate">发起报销</a>
-                        <{if $allow_judge}>
+                        <{if $is_judge}>
                             <a class="dropdown-item" href="/Reimbursement/approval">开始审批</a>
                         <{/if}>
                         <{if $allow_judge||$isadmin}>
