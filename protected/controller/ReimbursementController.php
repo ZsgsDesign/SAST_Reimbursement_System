@@ -156,12 +156,24 @@ class ReimbursementController extends BaseController
         if ($rid == null) {
             $this->display_type = 'list';
 
+            $this->arg('p','1');
+
             $auth_info = $db_auth->find(['uid=:uid', ':uid' => $uid]);
             if ($auth_info['auth'] != 0) {
-                $reim_list = $db_reimbursements->findAll(null, 'rid desc');
+                $reim_list = $db_reimbursements->findAll(null, 'rid desc','*',[$this->page,20,7]);
             } else {
-                $reim_list = $db_reimbursements->findAll(['uid=:uid', ':uid' => $uid], null, '*');
+                $reim_list = $db_reimbursements->findAll(['uid=:uid', ':uid' => $uid], null, [$this->page,20,7]);
             }
+
+            $pager = $reim_list->page;
+            $this->max_page = $pager['total_page'];
+            $this->count = count($reim_list);
+            $this->first_page = $pager['first_page'];
+            $this->last_page = $pager['last_page'];
+            $this->prev_page = $pager['prev_page'];
+            $this->next_page = $pager['next_page'];
+            $this->user_list = $reim_list;
+            $this->page_list = $pager['all_pages'];
 
             $dptm_info = $db_department->findAll();
             $temp = array();
