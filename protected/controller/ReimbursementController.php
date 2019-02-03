@@ -146,55 +146,48 @@ class ReimbursementController extends BaseController
         }
 
         $db_user = new Model('users');
+        $db_department = new Model('department');
         $user_info = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
         $uid = $user_info['uid'];
 
         $rid = arg('rid');
         if ($rid == null) {
             $this->display_type = 'list';
-            if (valid_auth($uid)) {
-                $db_reimbursements = new Model('reimbursements');
-                $reimDetails = $db_reimbursements->findAll();
+            $db_reimbursements = new Model('reimbursements');
 
-                if($reimDetails == null){
-                    return $this->err_info = '当前没有可供查看的报销记录哦';
-                }
+            if ($user_info['auth'] != 0) {
+                $reim_list = $db_reimbursements->findAll();
             } else {
-                $db_reimbursements = new Model('reimbursements');
-                $reimDetails = $db_reimbursements->findAll(['uid=:uid',':uid'=>$uid]);
-
-                if ($reimDetails == null) {
-                    return $this->err_info = '当前没有可供查看的报销记录哦';
-                }
+                $reim_list = $db_reimbursements->findAll(['uid=:uid', ':uid' => $uid]);
             }
-            return $this->list = $reimDetails;
-        }else{
+
+            $this->list = $reim_list;
+        } else {
             $this->display_type = 'single';
             $db_reimbursements - new Model('reimbursements');
-            $reimDetails = $db_reimbursements->findAll(['rid=:rid',':rid'=>$rid]);
-           
-            if($reimDetails == null){
+            $reimDetails = $db_reimbursements->findAll(['rid=:rid', ':rid' => $rid]);
+
+            if ($reimDetails == null) {
                 return $this->err_info = '没有找到这项报销记录哦';
             }
 
-           if($reimDetails['invoice'] == null){
-               $reimDetails['hasInvoice'] = false;
-           }else{
-               $reimDetails['hasInvoice'] = true;
-           }
-           if($reimDetails['transaction_voucher'] == null){
-               $reimDetails['hasTransactionVoucher'] = false;
-           }else{
-               $reimDetails['hasTransactionVoucher'] = true;
-           }
+            if ($reimDetails['invoice'] == null) {
+                $reimDetails['hasInvoice'] = false;
+            } else {
+                $reimDetails['hasInvoice'] = true;
+            }
+            if ($reimDetails['transaction_voucher'] == null) {
+                $reimDetails['hasTransactionVoucher'] = false;
+            } else {
+                $reimDetails['hasTransactionVoucher'] = true;
+            }
 
-           $db_change_log = new Model('change_log');
-           $change_log = $db_change_log ->findAll(['rid=:rid',':rid'=>$rid]);
+            $db_change_log = new Model('change_log');
+            $change_log = $db_change_log->findAll(['rid=:rid', ':rid' => $rid]);
 
-           $reimDetails['change_log'] = $change_log;
+            $reimDetails['change_log'] = $change_log;
+            $this->reimDetails = $reimDetails;
         }
-        return $this->reimDetails;
-        //查看某条报销的详情
     }
 
     public function actionEdit()

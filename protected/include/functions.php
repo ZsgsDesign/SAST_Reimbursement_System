@@ -1,6 +1,6 @@
 <?php
 
-ini_set('timezone','Asia/Shanghai');
+ini_set('timezone', 'Asia/Shanghai');
 
 function getIP()
 {
@@ -44,14 +44,15 @@ function valid_OPENID($OPENID)
 }
 
 //通过uid判断用户是否有管理员权限
-function valid_auth($uid)
+//现该方法已迁移至BaseController
+/* function valid_auth($uid)
 {
     $db_authority = new Model('Authority');
     $result = $db_authority->find(['uid=:uid','uid' => $uid]);
     $auth = $result['auth'];
     $forever = $result['forever'];
     $until = strtotime($result['until']);
-    
+
     $currentTime = time();
 
     if ($auth == 1 || $auth == 2) {
@@ -66,4 +67,4 @@ function valid_auth($uid)
     } else {
         return false;
     }
-}
+} */
