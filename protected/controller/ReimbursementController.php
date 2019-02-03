@@ -152,7 +152,7 @@ class ReimbursementController extends BaseController
         $db_reimbursements = new Model('reimbursements');
         $reimDetails = $db_reimbursements -> findAll();
 
-        $rid=arg('arg');
+        $rid=arg('rid');
         if ($rid == null) {
             if (valid_auth($uid)) {
             }else{
