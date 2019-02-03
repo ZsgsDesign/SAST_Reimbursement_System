@@ -3,8 +3,15 @@
     display: block;
     width: 100%;
 }
+table{
+    display: table!important;
+}
+.rbm-index{
+    cursor: pointer;
+}
 </style>
-<div class="container mundb-standard-container">
+<div class="container">
+    <{if isset($display_type)&&$display_type=='single'}>
     <div class="card">
         <div class="card-header">
              报销项目详情
@@ -14,19 +21,23 @@
                 <tbody>
                     <tr>
                         <td>报销内容</td>
-                        <td id="rbm-name"></td>
+                        <td id="rbm-name"><{$reim['name']}></td>
                     </tr>
                     <tr>
                         <td>备注</td>
-                        <td id="rbm-remarks"><br><br><br></td>
+                        <td id="rbm-remarks"><{$reim['remarks']}></td>
                     </tr>
                     <tr>
                         <td>部门</td>
-                        <td id="rbm-department"></td>
+                        <td id="rbm-department"><{$reim['department']}></td>
                     </tr>
                     <tr>
                         <td>报销金额</td>
-                        <td id="rbm-money"></td>
+                        <td id="rbm-money"><{$reim['money']}></td>
+                    </tr>
+                    <tr>
+                        <td>当前状态</td>
+                        <td id="rbm-status"><{$reim['status']}></td>
                     </tr>
                 </tbody>
             </table>
@@ -35,24 +46,24 @@
             </button>
             <div class="collapse" id="other_info">
                 <div class="row">
-                    <{if isset($hasInvoice)&&hasInvoice }>
+                    <{if !empty($reim['invoice']) }>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                        <a class="btn btn-primary" href="<{$invoice_src}>" download="发票.pdf" role="button">点我下载发票文件</a>
+                        <a class="btn btn-primary" href="/file/invoice/<{$reim['invoice']}>.pdf" download="发票.pdf" role="button">点我下载发票文件</a>
                     </div>
                     <{else}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <p>发票正在送往或已经送达指定地点</p> 
                     </div>
                     <{/if}>
-                    <{if isset($hasTransactionVoucher)&&$hasTransactionVoucher}>
+                    <{if !empty($reim['transaction_voucher'])}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                        <img src="<{if isset($transactionVoucher_src)}><{$transactionVoucher_src}><{/if}>" class="img-fluid">
-                        交易凭证<br><small>点击可查看大图</small>
+                        <img class="img-fluid" src="/file/transaction_voucher/<{$reim['transaction_voucher']}>.jpg" class="img-fluid">
+                        交易凭证<br><small><a class="btn btn-danger" href="/file/transaction_voucher/<{$reim['transaction_voucher']}>.jpg" role="button">点击可查看大图</a></small>
                     </div>
                     <{/if}>
-                    <{if isset($hasDeclaration)&&$hasDeclaration}>
+                    <{if !empty($reim['declaration'])}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                        <a class="btn btn-primary" href="<{$declaration_src}>" download="申报单.docx" role="button">点我下载申报单</a>
+                        <a class="btn btn-primary" href="/file/declaration/<{$reim['declaration']}>.docx" download="申报单.docx" role="button">点我下载申报单</a>
                     </div>
                     <{/if}>
                 </div>
@@ -88,7 +99,57 @@
             </div>
         </div>
     </div>
+    <{elseif isset($display_type)&&$display_type=='list'}>
+    <div class="card">
+        <div class="card-header">
+            报销记录查询
+        </div>
+        <div class="card-body">
+            <form class="text-right" method="POST" action="?action=search">
+                <div class="form-group">
+                    <label for="search_key">查找记录</label>
+                    <input type="text" name="search_key" id="search_key" class="form-control" placeholder="报销项目、报销人、部门">
+                </div>
+            </form>
+            <table class="table table-responsive table-hover">
+                <thead>
+                    <tr>
+                        <th>报销项目</th>
+                        <th>申报者</th>
+                        <th>部门</th>
+                        <th>申报金额</th>
+                        <th>当前状态</th>
+                        <th>申报时间</th>
+                    </tr>
+                </thead>
+                <{if !empty($list)}>
+                    <tbody>
+                        <{foreach $list as $value}>
+                            <tr class="rbm-index" id="rbm-<{$value['rid']}>">
+                                <td><{$value['name']}></td>
+                                <td><{$value['u_name']}></td>
+                                <td><{$value['department']}></td>
+                                <td><{$value['money']}></td>
+                                <td><{$value['status']}></td>
+                                <td><{$value['time']}></td>
+                            </tr>
+                        <{/foreach}>
+                    </tbody>
+                <{else}>
+                    <div class="alert alert-primary text-center" role="alert">
+                        <strong>当前暂无可见的项目</strong>
+                    </div>
+                <{/if}>
+            </table>
+        </div>
+    </div>
+    <{/if}>
 </div>
 
 <script>
+$('.rbm-index').on('click',function () {
+    var rid = $(this).attr('id').split('-');
+    rid = rid[1];
+    window.location = "/reimbursement/view/"+rid;
+});
 </script>

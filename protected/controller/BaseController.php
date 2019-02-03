@@ -27,7 +27,7 @@ class BaseController extends Controller
             $db_auth = new Model('authority');
             $auth_info = $db_auth->find(['uid=:uid', ':uid' => $user_info['uid']]);
             if ($auth_info['auth'] != 0 && $auth_info['forever'] != 1) {
-                $until = strtotime($result['until']);
+                $until = strtotime($auth_info['until']);
                 $currentTime = time();
                 if ($currentTime >= $until) {
                     $db_auth->update(['uid=:uid', ':uid' => $uid], ['auth' => '0', 'forever' => '1']);

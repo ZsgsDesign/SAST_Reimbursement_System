@@ -98,14 +98,14 @@ class ReimbursementController extends BaseController
                 $filename = $_FILES['transaction_voucher']['name'];
                 $extension = explode('.', $filename);
                 $extension = strtolower($extension[count($extension) - 1]);
-                $allow_ext = ['jpg', 'png'];
+                $allow_ext = ['jpg'];
                 if (!in_array($extension, $allow_ext)) {
-                    return $this->err_info = '不支持的交易凭证格式，只允许jpg，png上传，请重试';
+                    return $this->err_info = '不支持的交易凭证格式，只允许jpg上传，请重试';
                 }
 
                 $hash = md5_file($_FILES['transaction_voucher']['tmp_name']);
                 $RBM['transaction_voucher'] = $hash;
-                move_uploaded_file($_FILES['transaction_voucher']['tmp_name'], APP_DIR.'/file/transaction_voucher/'.$hash.$extension);
+                move_uploaded_file($_FILES['transaction_voucher']['tmp_name'], APP_DIR.'/file/transaction_voucher/'.$hash.'.'.$extension);
             }
 
             //处理上传的申报单
@@ -120,7 +120,7 @@ class ReimbursementController extends BaseController
 
                 $hash = md5_file($_FILES['declaration']['tmp_name']);
                 $RBM['declaration'] = $hash;
-                move_uploaded_file($_FILES['declaration']['tmp_name'], APP_DIR.'/file/declaration/'.$hash.$extension);
+                move_uploaded_file($_FILES['declaration']['tmp_name'], APP_DIR.'/file/declaration/'.$hash.'.'.$extension);
             }
             //存入数据库
             $db_rbm = new Model('reimbursements');
@@ -147,46 +147,86 @@ class ReimbursementController extends BaseController
 
         $db_user = new Model('users');
         $db_department = new Model('department');
+        $db_reimbursements = new Model('reimbursements');
+        $db_auth = new Model('authority');
         $user_info = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
         $uid = $user_info['uid'];
 
         $rid = arg('rid');
         if ($rid == null) {
             $this->display_type = 'list';
-            $db_reimbursements = new Model('reimbursements');
 
-            if ($user_info['auth'] != 0) {
-                $reim_list = $db_reimbursements->findAll();
+            $auth_info = $db_auth->find(['uid=:uid', ':uid' => $uid]);
+            if ($auth_info['auth'] != 0) {
+                $reim_list = $db_reimbursements->findAll(null, 'rid desc');
             } else {
-                $reim_list = $db_reimbursements->findAll(['uid=:uid', ':uid' => $uid]);
+                $reim_list = $db_reimbursements->findAll(['uid=:uid', ':uid' => $uid], null, '*');
+            }
+
+            $dptm_info = $db_department->findAll();
+            $temp = array();
+            $status_list = [
+                '0' => '待审批',
+                '1' => '已通过',
+                '2' => '被驳回',
+                '3' => '被挂起',
+            ];
+            if (!empty($reim_list) && is_array($reim_list)) {
+                foreach ($reim_list as &$value) {
+                    foreach ($dptm_info as $v) {
+                        if ($value['department'] == $v['did']) {
+                            $value['department'] = $v['name'];
+                            break;
+                        }
+                    }
+                    if (is_int($value['department'])) {
+                        $value['department'] = '未知部门';
+                    }
+                    if (!array_key_exists($value['uid'], $temp)) {
+                        $user_info = $db_user->find(['uid=:uid', ':uid' => $value['uid']]);
+                        $value['u_name'] = !empty($user_info['real_name']) ? $user_info['real_name'] : $user_info['SID'];
+                        $temp['uid'] = $value['u_name'];
+                    } else {
+                        $value['u_name'] = $temp['uid'];
+                    }
+                    $value['status'] = $status_list[$value['status']];
+                }
             }
 
             $this->list = $reim_list;
         } else {
             $this->display_type = 'single';
-            $db_reimbursements - new Model('reimbursements');
-            $reimDetails = $db_reimbursements->findAll(['rid=:rid', ':rid' => $rid]);
+            $reimDetails = $db_reimbursements->find(['rid=:rid', ':rid' => $rid]);
 
-            if ($reimDetails == null) {
-                return $this->err_info = '没有找到这项报销记录哦';
+            if (empty($reimDetails)) {
+                $this->jump('/reimbursement/view');
             }
 
-            if ($reimDetails['invoice'] == null) {
-                $reimDetails['hasInvoice'] = false;
-            } else {
-                $reimDetails['hasInvoice'] = true;
-            }
-            if ($reimDetails['transaction_voucher'] == null) {
-                $reimDetails['hasTransactionVoucher'] = false;
-            } else {
-                $reimDetails['hasTransactionVoucher'] = true;
-            }
+            $dptm_info = $db_department->find(['did=:did', ':did' => $reimDetails['department']]);
+            $reimDetails['department'] = empty($dptm_info) ? '未知部门' : $dptm_info['name'];
+            $user_info = $db_user->find(['uid=:uid', ':uid' => $reimDetails['uid']]);
+            $reimDetails['u_name'] = !empty($user_info['real_name']) ? $user_info['real_name'] : $user_info['SID'];
+            $status_list = [
+                '0' => '待审批',
+                '1' => '已通过',
+                '2' => '被驳回',
+                '3' => '被挂起',
+            ];
+            $reimDetails['status'] = $status_list[$reimDetails['status']];
 
             $db_change_log = new Model('change_log');
-            $change_log = $db_change_log->findAll(['rid=:rid', ':rid' => $rid]);
-
-            $reimDetails['change_log'] = $change_log;
-            $this->reimDetails = $reimDetails;
+            $this->change_log = $db_change_log->findAll(['rid=:rid', ':rid' => $rid]);
+            $temp = array();
+            if (!empty($this->change_log) && is_array($this->change_log)) {
+                foreach ($this->change_log as &$value) {
+                    $user_info = $db_user->find(['uid=:uid', ':uid' => $value['uid']]);
+                    $value['operator'] = !empty($user_info['real_name']) ? $user_info['real_name'] : $user_info['SID'];
+                    $value['bofore_status'] = $status_list[$value['bofore_status']];
+                    $value['type'] =
+                        $value['bofore_status'] == 0 ? '审批' : ($value['bofore_status'] == 1 ? '修改' : '未知');
+                }
+            }
+            $this->reim = $reimDetails;
         }
     }
 

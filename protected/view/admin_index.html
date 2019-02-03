@@ -22,11 +22,11 @@ tr{
                 </div>
             </form>
             <{if $action=='umanage'}>
-            <small>共 <{$count}> 条记录, <{$max_page}> 页,当前是第 <{$page}> 页</small>
+            <small>共 <{$count}> 条记录, <{if !empty($max_page)}><{$max_page}><{else}>1<{/if}> 页,当前是第 <{if !empty($page)}><{$page}><{else}>1<{/if}> 页</small>
             <{elseif $action=='usearch'}>
             <small>共 <{$count}> 条符合条件的记录</small>
             <{/if}>
-            <table class="table table-hover">
+            <table class="table table-hover table-responsive">
                 <thead>
                     <tr>
                         <th>学号</th>
@@ -48,13 +48,13 @@ tr{
                     <{/if}>
                 </tbody>
             </table>
-                <{if $action=='umanage'}>
+                <{if $action=='umanage'&&!empty($page_list)}>
                 <ul class="text-center pagination">
-                    <li class="page-item"><a class="page-link" href="?action=umanagep=fore"><strong>&lt;</strong></a></li>
+                    <li class="page-item"><a class="page-link" href="?action=umanage&p=<{$prev_page}>"><strong>&lt;</strong></a></li>
                     <{foreach $page_list as $value}>
                     <li class="page-item"><a class="page-link" href="?action=umanage&p=<{$value}>"><{$value}></a></li>
                     <{/foreach}>
-                    <li class="page-item"><a class="page-link" href="?action=umanagep=next"><strong>&gt;</strong></a></li>
+                    <li class="page-item"><a class="page-link" href="?action=umanage&p=<{$next_page}>"><strong>&gt;</strong></a></li>
                     
                 </ul>
                 <{/if}>

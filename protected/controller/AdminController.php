@@ -11,8 +11,9 @@ class AdminController extends BaseController
             $result = $db_user->findAll(null, null, '*', [$this->page, 20, 7]);
             $db_auth = new Model('authority');
             $pager = $db_user->page;
+
             $this->max_page = $pager['total_page'];
-            $this->count = $pager['total_count'];
+            $this->count = count($result);
             $this->first_page = $pager['first_page'];
             $this->last_page = $pager['last_page'];
             $this->prev_page = $pager['prev_page'];
