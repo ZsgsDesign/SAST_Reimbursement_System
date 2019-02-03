@@ -141,97 +141,130 @@ class ReimbursementController extends BaseController
 
     public function actionViewDetail()
     {
+        //这个action可以改成actionView了。。。
         if (!$this->islogin) {
             $this->jump('/account');
         }
 
         $db_user = new Model('users');
-        $user_info = $db_user -> find(['OPENID=:OPENID',':OPENID'=>$this->OPENID]);
+        $user_info = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
         $uid = $user_info['uid'];
 
         $db_reimbursements = new Model('reimbursements');
-        $reimDetails = $db_reimbursements -> findAll();
+        $reimDetails = $db_reimbursements->findAll();
 
-        $rid=arg('rid');
+        //我们一般不在一些参数不确定的情况下直接findAll吧应该。。性能花销会有点大呢?
+        //这里可以先获取rid 获取不到看权限 权限够再findAll 权限不够就findAll(['uid=:uid',':uid'=>$uid]);
+
+        $rid = arg('rid');
         if ($rid == null) {
+            //如果rid是空的的话 ，我们要让用户看到一个他们可以查看的所有报销记录的列表，然后让他们点进一个报销记录里面
+            //这个可以看master分支的用户管理那一块,今晚要把分页的功能完善了,如果报销记录太多的话就有必要分页处理,不然一个页面显示太多的话就很难受
+            //然后,如果让用户看到报销记录的列表的话只需要一些基本的信息就可以了，比如报销内容,报销人,报销时间什么什么的
             if (valid_auth($uid)) {
-            }else{
+            } else {
                 foreach ($reimDetails as $value) {
-                    if($value['uid']!=$uid){
+                    if ($value['uid'] != $uid) {
                         array_splice($value);
+                        //这个函数的用法有问题哦,想要去掉的话可以直接unset(),每个函数的用法都可以直接百度函数名,可以看到的
+                        //这里的话 foreach 写成 as $key => $value 的样字,然后unset可以直接 unset($reimDetails[$key]);
+                        //然后php里面似乎也有值传递和引用传值,foreach默认的是值传递相当于形参改了不影响原来的
+                        //要想引用传值的话要这么写 foreach($reimDetails as &$value)
                     }
                 }
             }
-            $i=0;
-            $j=0;
-            foreach($reimDetails as $value){
-                if($value['invoice']==null){
-                    $hasInvoice[i]=0;
-                    $i++;
-                }else{
-                    $hasInvoice[i]=1;
-                    $i++;
+            $i = 0;
+            $j = 0;
+            //唔...这里直接返回上面处理完的数组就可以啦
+            //对了 让前端可以看到的方式是 $this->var =  xxxx;
+            //直接 $var = xxxx; 前端是什么都看不到的呢
+
+            //还有这里的i和j,php里边一般可以不这么写
+            //因为键值对的数组的话，我们可以直接在下面写$value['hasInvoice'] = true;这样，前提是要引用传值,171-172行的内容就是
+            //也可以百度哦 2333
+            //这样就少了不必要的变量,都放在一个reimDetails这个二维数组里，每一个成员就是一条记录的报销信息
+            //这样理解起来和前端处理起来也会方便很多的呢
+            //虽然这么写也不是不行啦
+            foreach ($reimDetails as $value) {
+                if ($value['invoice'] == null) {
+                    $hasInvoice[i] = 0;
+                    ++$i;
+                } else {
+                    $hasInvoice[i] = 1;
+                    ++$i;
                 }
-                if($value['transaction_voucher']==null){
-                    $hasTransactionVoucher[j]=0;
-                    $j++;
-                }else{
-                    $hasTransactionVoucher[j]=1;
-                    $j++;
+                if ($value['transaction_voucher'] == null) {
+                    $hasTransactionVoucher[j] = 0;
+                    ++$j;
+                } else {
+                    $hasTransactionVoucher[j] = 1;
+                    ++$j;
                 }
             }
-        }elseif(!empty($reimDetails['rid'])){
-            foreach($reimDetails as $value){
-                if($value['rid'] != $rid){
+            //↓ 这里直接empty($reimDetails)就可以啦,虽然结果是差不多的
+        } elseif (!empty($reimDetails['rid'])) {
+            foreach ($reimDetails as $value) {
+                if ($value['rid'] != $rid) {
                     array_splice($value);
+                    //唔 这里用法。。跟上面的一样
                 }
             }
-            if($reimDetails['invoice']==null){
-                $hasInvoice=false;
-            }else{
-                $hasInvoice=true;
+            if ($reimDetails['invoice'] == null) {
+                $hasInvoice = false;
+            } else {
+                $hasInvoice = true;
             }
-            if($reimDetails['transaction_voucher']==null){
-                $hasTransactionVoucher=false;
-            }else{
-                $hasTransactionVoucher=true;
+            if ($reimDetails['transaction_voucher'] == null) {
+                $hasTransactionVoucher = false;
+            } else {
+                $hasTransactionVoucher = true;
             }
-            if($reimDetails == null){
-                return $this->err_info='当前并没有报销记录哦';
-            }else{
-                return $this->list=array($reimDetails,$hasInvoice,$hasTransactionVoucher);
+
+            if ($reimDetails == null) {
+                return $this->err_info = '当前并没有报销记录哦';
+            } else {
+                return $this->list = array($reimDetails, $hasInvoice, $hasTransactionVoucher);
             }
-        }else{
+        } else {
             return $this->err_info = '无相关记录';
         }
         //查看某条报销的详情
         //TODO...
     }
 
-    public function actionViewChangelog(){
-        if(!$this->islogin){
+    public function actionViewChangelog()
+    {
+        //唔。。 这一部分代码应该移到actionView里面去,是我当时设计的不好 我的锅
+        //你可以去看看master分支的查看报销记录,直接看finance.winter.mundb.xyz
+        //前端是怎么想的直接去看界面可以看的很清楚呢 2333 然后针对该有的变量在后端往前面传值
+        //或者自己看着修改,前端可以对应地改东西什么的
+
+        //这一段写的还是比较优秀的呢,只是传值的方法不是很对劲
+        //$this->var = xxxx;这样 2333 前面写了的
+        if (!$this->islogin) {
             $this->jump('/account');
         }
 
         $db_user = new Model('users');
-        $user_info = $db_user -> find(['OPENID=:OPENID',':OPENID'=>$this->OPENID]);
+        $user_info = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
         $currentUID = $user_info['uid'];
 
-        if(valid_auth($currentUID) == true){
-            $rid=arg('rid');
+        if (valid_auth($currentUID) == true) {
+            $rid = arg('rid');
             $db_change_log = new Model('change_log');
-            $Change_Log = $db_change_log ->findAll(['rid=:rid',':rid'=>$rid]);
-        }else{
-            $rid=arg('rid');
+            $Change_Log = $db_change_log->findAll(['rid=:rid', ':rid' => $rid]);
+        } else {
+            $rid = arg('rid');
             $db_reimbursements = new Model('reimbursements');
-            $uid = $db_reimbursements ->find(['rid=:rid',':rid'=>$rid]);
-            if($currentUID == $uid){
+            $uid = $db_reimbursements->find(['rid=:rid', ':rid' => $rid]);
+            if ($currentUID == $uid) {
                 $db_change_log = new Model('change_log');
-                $Change_Log = $db_change_log ->findAll(['rid=:rid',':rid'=>$rid]);
-            }else{
+                $Change_Log = $db_change_log->findAll(['rid=:rid', ':rid' => $rid]);
+            } else {
                 return $this->err_info = '抱歉，不是你发起的报销，无权查看';
             }
         }
+
         return $this->liset = $Change_Log;
         //查看某条报销的操作记录
     }
