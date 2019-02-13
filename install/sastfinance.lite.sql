@@ -62,14 +62,14 @@ CREATE TABLE `reimbursements`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `change_log`;
 CREATE TABLE `change_log`  (
-  `alid` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `clid` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `uid` int(11) NOT NULL COMMENT '操作者',
   `rid` int(11) NOT NULL COMMENT '报销项目',
   `change_type` tinyint DEFAULT 0 COMMENT '操作类型',
-  `status` tinyint DEFAULT 0 COMMENT '操作后状态',
+  `before_status` tinyint DEFAULT 0 COMMENT '操作前状态',
   `remarks` varchar(255) NOT NULL COMMENT '备注',
   `time` varchar(255) DEFAULT NULL COMMENT '审批日期',
-  PRIMARY KEY (`alid`)
+  PRIMARY KEY (`clid`)
 );
 
 -- ----------------------------

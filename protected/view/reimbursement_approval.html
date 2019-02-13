@@ -30,59 +30,31 @@
             审批
         </div>
         <div class="card-body">
+            <{if isset($err_info)}>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <{$err_info}>
+            </div>
+            <{/if}>
+            <{if isset($success_info)}>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <{$success_info}>
+            </div>
+            <{/if}>
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
                     <ul class="list-group">
                         <span>待审批项目</span>
                         <{if isset($wait_approval_list) }>
-                        <{foreach $wait_approval_list as $rid => $value}>
-                        <li class="btn btn-default list-group-item active" id="rbm-<{$rid}>"><h6 class="mundb-text-truncate-1"><{$value['name']}>1</h6><br><p class="mundb-text-truncate-1"><{$value['name']}></p></li> <!-- 此处rbm是reimbursement的缩写 -->
-                        <{/foreach}>
-                        <{else}>
-                        <li class="btn btn-default list-group-item active" id="rbm-test"><h6 class="mundb-text-truncate-1">这里写的是待审批内容1</h6><br><p class="mundb-text-truncate-1">这里会显示报销记录的备注的一部分 23333333</p></li>
-                        <li class="btn btn-default list-group-item active" id="rbm-test"><h6 class="mundb-text-truncate-1">这里写的是待审批内容2</h6><br><p class="mundb-text-truncate-1">这里会显示报销记录的备注的一部分 23333333</p></li>
-                        <li class="btn btn-default list-group-item active" id="rbm-test"><h6 class="mundb-text-truncate-1">这里写的是待审批内容3</h6><br><p class="mundb-text-truncate-1">这里会显示报销记录的备注的一部分 23333333</p></li>
+                            <{foreach $wait_approval_list as $key => $value}>
+                            <li class="btn btn-default list-group-item active" id="rbm-<{$value['rid']}>"><h6 class="mundb-text-truncate-1"><{$value['name']}></h6><br><p class="mundb-text-truncate-1"><{$value['remarks']}></p></li> <!-- 此处rbm是reimbursement的缩写 -->
+                            <{/foreach}>
                         <{/if}>
                     </ul>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
+                <div  class="col-xs-12 col-sm-12 col-md-8 col-lg-9">
                     <div id="rbm-view" class="container-fluid card">
-                        <div class="card-header">
-                            项目信息
-                        </div>
-                        <div class="card-body">
-                            <table class="table">
-                                <tbody>
-                                    <tr>
-                                        <td>报销内容</td>
-                                        <td id="rbm-name"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>备注</td>
-                                        <td id="rbm-remarks"><br><br><br></td>
-                                    </tr>
-                                    <tr>
-                                        <td>部门</td>
-                                        <td id="rbm-department"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>报销金额</td>
-                                        <td id="rbm-money"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>支票</td>
-                                        <td><a class="btn btn-default td-a" role="button">点我查看</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>交易凭证</td>
-                                        <td><a class="btn btn-primary td-a" role="button">点我查看图片</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>申报单</td>
-                                        <td><a class="btn btn-primary td-a" role="button">点我下载到本地</a></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="alert alert-primary text-center" role="alert">
+                            <strong>请在左侧选择项目</strong>
                         </div>
                     </div>
                     <div id="rbm-approval" class="container-fluid card">
@@ -90,11 +62,11 @@
                             审批信息
                         </div>
                         <div class="card-body">
-                            <form action="" method="POST" class="needs-validation" novalidate>
+                            <form action="?action=approval" method="POST" class="needs-validation" novalidate>
                                 <input type="hidden" name="rid" id="rid">
                                 <div class="form-group">
                                     <label for="remarks" class="bmd-label-floating">批注:</label>
-                                    <textarea class="form-control" name="remarks" id="remarks" rows="4" required></textarea>
+                                    <textarea class="form-control" name="remarks" id="remarks" rows="5" required></textarea>
                                     <div class="invalid-feedback">必须填写的字段</div>
                                 </div>
                                 <div class="form-check form-check-inline">
@@ -136,15 +108,16 @@
         }, false);
 
     }, false);
+    });
 
     $('.list-group-item').on(
         'click',function() {
             var rid = $(this).attr('id').split('-')[1];
             $('#rid').val(rid);
-            $.getJSON('/ajax/GetRBMInfo?rid='+rid,function (data) {
-                //TODO...
+            $('#rbm-view').load('/reimbursement/view/'+rid+'?approval=1',()=>{
+                $('#rbm-view').find('.container').removeClass('container').addClass('container-fluid')
             });
         }
-    )
+    );
 
 </script>

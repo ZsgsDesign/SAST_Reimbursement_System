@@ -8,6 +8,7 @@ $config = array(
         'admin/<a>' => 'admin/<a>',
         'admin' => 'admin/index',
         'ajax/<a>' => 'ajax/<a>',
+        'reimbursement/edit/<rid>' => 'reimbursement/edit',
         'reimbursement/view/<rid>' => 'reimbursement/view',
         'reimbursement/<a>' => 'reimbursement/<a>',
         'reimbursement' => 'reimbursement/statisticstotality',

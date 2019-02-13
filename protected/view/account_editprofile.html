@@ -17,6 +17,11 @@
                 <{$err_info}>
             </div>
             <{/if}>
+            <{if isset($success_info)}>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <{$success_info}>
+            </div>
+            <{/if}>
             <div class="row">
                 <div class="text-center col-xs-12 col-sm-12 col-md-6 col-lg-5">
                     <{if isset($portrait)}> 

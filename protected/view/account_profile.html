@@ -2,6 +2,9 @@
     tr{
         border-top-style: hidden;
     }
+    #head{
+        margin-bottom: 1rem;
+    }
 </style>
 <div class="container mundb-standard-container">
     <div class="card">
@@ -12,7 +15,7 @@
             <div class="row">
                 <div class="text-center col-xs-12 col-sm-12 col-md-6 col-lg-5">
                     <{if isset($portrait)}> 
-                    <img class="img-fluid" src="/file/img/<{$portrait}>.jpg" alt="head">
+                    <img id="head" class="img-fluid" src="/file/img/<{$portrait}>.jpg" alt="head">
                     <{else}>
                     <h1>头像</h1>
                     <{/if}>
@@ -32,7 +35,7 @@
                                 <td>姓名</td>
                                 <td><{if isset($real_name)}><{$real_name}><{else}>王境泽<{/if}></td>
                             </tr>
-                            <{if isset($department)}>
+                            <{if isset($department_name)}>
                             <tr>
                                 <td>部门</td>
                                 <td><{$department_name}></td>

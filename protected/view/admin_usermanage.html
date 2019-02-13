@@ -1,3 +1,13 @@
+<style>
+    table{
+        display: table!important;
+    }
+    #until-box{
+        padding: 0;
+        margin: 0;
+        text-align: right;
+    }
+</style>
 <div class="container">
     <{if isset($err_info_all)}>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -22,7 +32,7 @@
         </div>
         <{/if}>
         <div class="card-body">
-            <h5>基本信息</h5>
+            <h6>基本信息</h6>
             <div class="row">
                 <div class="text-center col-xs-12 col-sm-12 col-md-6 col-lg-5">
                     <{if isset($portrait)}> 
@@ -78,8 +88,8 @@
                     </table>
                 </div>
             </div>
-            <hr>
-            <h5>其他信息</h5>
+            <br><hr>
+            <h6>其他信息</h6>
             <div class="container">
                 <table class="table table-responsive">
                     <tbody>
@@ -94,23 +104,21 @@
                     </tbody>
                 </table>
             </div>
-            <hr>
-            <h5>权限修改</h5>
+            <br><hr>
+            <h6>权限修改</h6>
             <div class="container">
                 <form method="POST" action="?action=change_auth">
                     <input type="hidden" name="uid" id="uid" class="form-control" value="<{$uid}>">
                     <div class="form-group">
-                        <div class="form-group">
-                            <label for="auth">权限级别:</label>
-                            <select class="custom-select" name="auth" id="auth" required>
-                                <option selected></option>
-                                <option value="0">普通用户</option>
-                                <option value="1">审批员</option>
-                                <option value="2">管理员</option>
-                            </select>
-                        </div>
+                        <label for="auth">权限级别:</label>
+                        <select class="custom-select" name="auth" id="auth" required>
+                            <option selected></option>
+                            <option value="0">普通用户</option>
+                            <option value="1">审批员</option>
+                            <option value="2">管理员</option>
+                        </select>
                     </div>
-                    <div class="form-group">
+                    <div id="until-box" class="form-group">
                         <div class="checkbox">
                             <label for="forever">
                                 <input class="form-control" type="checkbox" name="forever" id="forever" onclick="isForever()"><span>永久权限</span>
@@ -142,4 +150,7 @@ function isForever(){
         $('#until').attr('disabled',false);
     }
 }
+$(document).ready(function() {
+    $('.mdb-select').material_select();
+});
 </script>

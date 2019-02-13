@@ -9,10 +9,29 @@ table{
 .rbm-index{
     cursor: pointer;
 }
+tr{
+    border-top-style: hidden;
+}
+.MDI.download,.MDI.refresh{
+    font-size: 5rem;
+    font-weight: bolder;
+}
+.td-l{
+    width: 14rem;
+}
+#td-cl-remarks{
+    word-wrap: break-word;
+    word-break: break-all;
+    width: 20rem;
+}
 </style>
+<{if $needDiv}>
 <div class="container">
+<{/if}>
     <{if isset($display_type)&&$display_type=='single'}>
+    <{if $needDiv}>
     <div class="card">
+    <{/if}>
         <div class="card-header">
              报销项目详情
         </div>
@@ -20,50 +39,50 @@ table{
             <table class="table">
                 <tbody>
                     <tr>
-                        <td>报销内容</td>
+                        <td class="td-l">报销内容</td>
                         <td id="rbm-name"><{$reim['name']}></td>
                     </tr>
                     <tr>
-                        <td>备注</td>
+                        <td class="td-l">备注</td>
                         <td id="rbm-remarks"><{$reim['remarks']}></td>
                     </tr>
                     <tr>
-                        <td>部门</td>
+                        <td class="td-l">部门</td>
                         <td id="rbm-department"><{$reim['department']}></td>
                     </tr>
                     <tr>
-                        <td>报销金额</td>
+                        <td class="td-l">报销金额</td>
                         <td id="rbm-money"><{$reim['money']}></td>
                     </tr>
                     <tr>
-                        <td>当前状态</td>
+                        <td class="td-l">当前状态</td>
                         <td id="rbm-status"><{$reim['status']}></td>
                     </tr>
                 </tbody>
             </table>
             <button class="btn-fluid btn btn-primary" type="button" data-toggle="collapse" data-target="#other_info" aria-expanded="false" aria-controls="other_info">
-                查看相关凭证
+                <i class="MDI note"></i> 查看相关凭证
             </button>
             <div class="collapse" id="other_info">
                 <div class="row">
                     <{if !empty($reim['invoice']) }>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                        <a class="btn btn-primary" href="/file/invoice/<{$reim['invoice']}>.pdf" download="发票.pdf" role="button">点我下载发票文件</a>
+                        <a class="btn btn-primary" href="/file/invoice/<{$reim['invoice']}>.pdf" download="发票.pdf" role="button"><i class="MDI download"></i><br>点我下载发票文件</a>
                     </div>
                     <{else}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                        <p>发票正在送往或已经送达指定地点</p> 
+                        <p class="btn btn-primary"><i class="MDI refresh"></i><br>发票正在送往或已经送达指定地点</p> 
                     </div>
                     <{/if}>
                     <{if !empty($reim['transaction_voucher'])}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <img class="img-fluid" src="/file/transaction_voucher/<{$reim['transaction_voucher']}>.jpg" class="img-fluid">
-                        交易凭证<br><small><a class="btn btn-danger" href="/file/transaction_voucher/<{$reim['transaction_voucher']}>.jpg" role="button">点击可查看大图</a></small>
+                        交易凭证<br><small><a class="btn btn-danger" href="/file/transaction_voucher/<{$reim['transaction_voucher']}>.jpg" target="_blank" role="button">点击可查看大图</a></small>
                     </div>
                     <{/if}>
                     <{if !empty($reim['declaration'])}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                        <a class="btn btn-primary" href="/file/declaration/<{$reim['declaration']}>.docx" download="申报单.docx" role="button">点我下载申报单</a>
+                        <a class="btn btn-primary" href="/file/declaration/<{$reim['declaration']}>.docx" download="申报单.docx" role="button"><i class="MDI download"></i><br>点我下载申报单</a>
                     </div>
                     <{/if}>
                 </div>
@@ -72,33 +91,41 @@ table{
                 查看编辑/审批记录
             </button>
             <div class="collapse" id="log">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>操作者</th>
-                            <th>操作备注</th>
-                            <th>操作时间</th>
-                            <th>操作前状态</th>
-                            <th>操作类型</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <{if isset($change_log)}>
-                        <{foreach $change_log as $value}>
-                        <tr>
-                            <td><{ $value['operator'] }></td>
-                            <td><{ $value['remarks'] }></td>
-                            <td><{ $value['time'] }></td>
-                            <td><{ $value['bofore_status'] }></td>
-                            <td><{ $value['type'] }></td>
-                        </tr>
-                        <{/foreach}>
-                        <{/if}>
-                    </tbody>
-                </table>
-            </div>
+            <{if isset($change_log)}>
+                <{if !empty($change_log)}>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>操作者</th>
+                                <th>操作备注</th>
+                                <th>操作时间</th>
+                                <th>操作前状态</th>
+                                <th>操作类型</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <{foreach $change_log as $value}>
+                            <tr>
+                                <td><{ $value['operator'] }></td>
+                                <td id="td-cl-remarks"><{ $value['remarks'] }></td>
+                                <td><{ $value['time'] }></td>
+                                <td><{ $value['before_status'] }></td>
+                                <td><{ $value['change_type'] }></td>
+                            </tr>
+                            <{/foreach}>
+                        </tbody>
+                    </table>
+                <{else}>
+                    <div class="alert alert-primary text-center" role="alert">
+                        <strong>该项目暂未被操作过</strong>
+                    </div>
+                <{/if}>
+            <{/if}>
         </div>
+        </div>
+    <{if $needDiv}>
     </div>
+    <{/if}>
     <{elseif isset($display_type)&&$display_type=='list'}>
     <div class="card">
         <div class="card-header">
@@ -144,7 +171,9 @@ table{
         </div>
     </div>
     <{/if}>
+<{if $needDiv}>
 </div>
+<{/if}>
 
 <script>
 $('.rbm-index').on('click',function () {

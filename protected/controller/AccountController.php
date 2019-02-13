@@ -136,9 +136,9 @@ class AccountController extends BaseController
         if (!empty($user_info['department'])) {
             $db_department = new Model('department');
             $department = $user_info['department'];
-            $d = $db_department->find(['did=:did', ':did' => $department]);
-            if (!empty($d)) {
-                $this->department_name = $d['name'];
+            $dptm = $db_department->find(['did=:did', ':did' => $department]);
+            if (!empty($dptm)) {
+                $this->department_name = $dptm['name'];
             }
         }
         $this->authority = $auth_info['auth'];
@@ -147,11 +147,19 @@ class AccountController extends BaseController
         }
     }
 
+    //用户资料编辑
     public function actionEditProfile()
     {
         $db_user = new Model('users');
+        $db_department = new Model('department');
         $user_info = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
         $this->name = $user_info['name'];
+        if ($user_info['department'] != -1) {
+            $dptm = $db_department->find(['did=:did', ':did' => $user_info['department']]);
+            if (!empty($dptm)) {
+                $this->department_name = $dptm['name'];
+            }
+        }
         if (!empty($user_info['real_name'])) {
             $this->real_name = $user_info['real_name'];
         }
@@ -203,18 +211,41 @@ class AccountController extends BaseController
                 'portrait' => $hash,
             ]);
             move_uploaded_file($_FILES['portrait']['tmp_name'], APP_DIR.'/file/img/'.$hash.'.jpg');
+            $this->success_info = '头像已修改成功';
         } elseif ($action == 'edit_profile') {
+            $update_row = array();
             $name = arg('name');
             $real_name = arg('real_name');
             $department = arg('department');
             if (empty($name)) {
                 return $this->err_info = '用户名为必填项!';
             }
+
+            if ($name != $this->name) {
+                $update_row['name'] = $name;
+            }
+            if ($real_name != $this->real_name) {
+                $update_row['real_name'] = $real_name;
+            }
+            if (!empty($department) && $department != $this->department_name) {
+                $result = $db_department->find(['name=:name', ':name' => $department]);
+                if (!empty($result)) {
+                    $update_row['department'] = $result['did'];
+                } else {
+                    $this->err_info = '没有找到该部门，其他信息将会继续修改';
+                }
+            }
+            if (!empty($update_row)) {
+                $db_user->update(['uid=:uid', ':uid' => $user_info['uid']], $update_row);
+            } else {
+                return $this->err_info = '没有进行任何修改';
+            }
+            $this->name = $name;
+            $this->real_name = $real_name;
+            $this->department_name = $department;
+            $this->success_info = '信息修改成功，2秒后跳转';
+            $this->jump('/account', 2000);
         }
-        //输入了三个东西，包括部门名 找一下部门表里面有没有记录，有的话就通过 不然报错
-        //没有问题的话直接update，然后jump到profile页面就可以了
-        //记得储存的时候要从部门表里把did拿出来，users表的department字段是int类型的
-        //TODO...
     }
 
     //退出登录

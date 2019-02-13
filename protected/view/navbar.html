@@ -2,6 +2,9 @@
 .navbar{
     margin-bottom: 4rem;
 }
+#dropdownId{
+    margin-right: 2rem;
+}
 </style>
 <nav class="navbar navbar-expand-sm navbar-light bg-light">
     <a class="navbar-brand font-weight-bold" href="https://sast.njupt.edu.cn/" title="前往 SAST">SAST</a>
@@ -23,13 +26,13 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">你好，<{ $display_name }></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownId">
-                        <a class="dropdown-item" href="/account/profile">我的资料</a>
+                        <a class="dropdown-item" href="/account/profile"><i class="MDI account-circle"></i> 我的资料</a>
                         <a class="dropdown-item" href="/Reimbursement/Initiate">发起报销</a>
                         <{if $is_judge}>
                             <a class="dropdown-item" href="/Reimbursement/approval">开始审批</a>
                         <{/if}>
-                        <{if $is_judge||$isadmin}>
-                            <a class="dropdown-item" href="/Reimbursement/Stat">统计</a>
+                        <{if $is_judge||$is_admin}>
+                            <a class="dropdown-item" href="/Reimbursement/Stat">报销统计</a>
                         <{/if}>
                         <{if $is_admin}>
                             <a class="dropdown-item" href="/admin">系统管理</a>

@@ -1,62 +1,53 @@
-<style>
-    .card{
-        margin-top: 4rem;
-    }
-    tr{
-        border-top-style: hidden;
-    }
-    textarea{
-        resize: none;
-    }
-    body{
-        margin-bottom: 4rem;
-    }
-    .invoice-choose{
-        display: block;
-    }
-    td{
-        text-align: center;
-        vertical-align:middle;
-    }
-    .row{
-        height: 100%;
-    }
-</style>
-<{if isset($invoice_type)}>
-<div class="container mundb-standard-container">
+<div class="container">
     <div class="card">
         <div class="card-header">
-            发起报销
+            报销项目 - 编辑
         </div>
         <div class="card-body">
-            <form class="needs-validation" action="?action=initiate" method="post" id="reimburse_info" enctype="multipart/form-data" novalidate>
-                <input type="hidden" name="invoice_type" value="<{$invoice_type}>">
+            <{if(!isset($error))}>
+            <small class="text-muted">项目序号 - <{$rid}></small>
+
+            <{if isset($err_info)}>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <{$err_info}>
+            </div>
+            <{/if}>
+
+            <{if isset($success_info)}>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <{$success_info}>
+            </div>
+            <{/if}>
+
+            <form class="needs-validation" action="" method="post" id="edit_form" novalidate>
+                <input type="hidden" name="rid" value="<{$rid}>">
+                <input type="hidden" name="action" value="edit">
                 <div class="form-group">
                     <label for="name" class="bmd-label-floating">报销内容</label>
-                    <input type="text" name="name" class="form-control" id="name" maxlength="255" required>
-                    <div class="invalid-feedback">报销内容是必填字段！</div>
+                    <input type="name" name="name" class="form-control" id="name" value="<{$reim['name']}>" required>
+                    <div class="invalid-feedback">报销内容是必填字段</div>
                 </div>
                 <div class="form-group">
                     <label for="remarks" class="bmd-label-floating">备注</label>
-                    <textarea class="form-control" name="remarks" id="remarks" rows="5" required></textarea>
+                    <textarea class="form-control" name="remarks" id="remarks" rows="5" required><{$reim['remarks']}></textarea>
                     <div class="invalid-feedback">备注是必填字段！</div>
                 </div>
                 <div class="form-group">
                     <label for="department" class="bmd-label-floating">部门</label>
-                    <input type="text" name="department" class="form-control" id="department" required> 
+                    <input type="text" name="department" class="form-control" id="department" value="<{$reim['department']}>" required> 
                     <div class="invalid-feedback">部门是必填字段！</div>
                 </div>
                 <div class="form-group">
                     <label for="money" class="bmd-label-floating">报销金额</label>
-                    <input type="number" name="money" class="form-control" id="money" required>
+                    <input type="number" name="money" class="form-control" id="money" value="<{$reim['money']}>" required>
                     <div class="invalid-feedback">金额是必填字段！</div>
                 </div>
-                <br>
+
                 <div id="upload_tip" class="alert alert-warning alert-dismissible show text-center" role="alert">
                     <{if $invoice_type}>
                     请将纸质发票自行请送往指定地点。
                     <{else}>
-                    请务必上传发票文件
+                    请务必确认发票文件有效
                     <{/if}>
                 </div>
                 <br>
@@ -64,7 +55,10 @@
                     <{if !$invoice_type}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group">
-                            <label id="invoice_tip" class="btn btn-danger" for="invoice">点这里上传发票</label>
+                            <{if !empty($reim['invoice']) }>
+                            <a class="btn btn-primary" href="/file/invoice/<{$reim['invoice']}>.pdf" download="发票.pdf" role="button"><i class="MDI download"></i>下载原发票文件</a>
+                            <{/if}>
+                            <label id="invoice_tip" class="btn btn-danger" for="invoice">重新上传发票文件</label>
                             <input type="file" class="form-control-file" name="invoice" id="invoice" aria-describedby="invoiceHelp" style="display: none">
                             <small id="invoiceHelp" class="form-text text-muted"> 请上传完整的pdf发票文件</small>
                         </div>
@@ -72,32 +66,56 @@
                     <{/if}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group">
-                            <label class="btn btn-danger" for="transaction_voucher">点这里上传交易凭证</label>
+                            <{if !empty($reim['transaction_voucher'])}>
+                                <img class="img-fluid" src="/file/transaction_voucher/<{$reim['transaction_voucher']}>.jpg" class="img-fluid">
+                                <small class="text-muted">原交易凭证</small><br><small><a class="btn btn-success" href="/file/transaction_voucher/<{$reim['transaction_voucher']}>.jpg" target="_blank" role="button">查看大图</a></small><br>
+                            <{/if}>
+                            <label class="btn btn-danger" for="transaction_voucher">重新上传交易凭证</label>
                             <input type="file" class="form-control-file" name="transaction_voucher" id="transaction_voucher" aria-describedby="transaction_voucherHelp" style="display: none">
-                            <img id="preview_transaction_voucher" class="img-fluid" src="" class="img-fluid hidden"><small id="preview_tag" class="form-text text-muted" style="display: none">预览</small><br>
+                            <img id="preview_transaction_voucher" class="img-fluid" src="" class="img-fluid hidden">
+                            <small id="preview_tag" class="form-text text-muted" style="display: none">预览</small><br>
                             <small id="transaction_voucherHelp" class="form-text text-muted"> 请上传清晰的jpg图片文件</small>
                         </div>
                     </div>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group">
-                            <label class="btn btn-danger" for="declaration">点这里上传申报单</label>
+                            <{if !empty($reim['declaration'])}>
+                                <a class="btn btn-primary" href="/file/declaration/<{$reim['declaration']}>.docx" download="申报单.docx" role="button"><i class="MDI download"></i>点我下载申报单</a><br>
+                            <{/if}>
+                            <label class="btn btn-danger" for="declaration">重新上传申报单</label>
                             <input type="file" class="form-control-file" name="declaration" id="declaration" aria-describedby="declarationHelp" style="display: none">
                             <small id="declarationHelp" class="form-text text-muted"> 请上传docx文件</small>
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="remarks_edit" class="bmd-label-floating">此次编辑的备注</label>
+                    <textarea class="form-control" name="remarks_edit" id="remarks_edit" rows="5" required></textarea>
+                    <div class="invalid-feedback">必填字段！</div>
+                </div>
                 <div class="text-right">
-                    <a href="/Reimbursement/Initiate" class="btn btn-default">返回</a>
-                    <button type="submit" class="btn btn-primary">发起</button>
+                    <button type="submit" class="btn btn-danger">确认修改</button>
                 </div>
             </form>
+            <{else}>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong><{$error}></strong>
+            </div>
+            <{if isset($allow_refresh) && $allow_refresh}>
+                <form action="" method="post">
+                    <input type="hidden" name="action" value="refresh">
+                    <button type="submit" class="btn btn-primary" style="display: block;">取消挂起 并 恢复到待审核状态</button>
+                </form>
+            <{/if}>
+            <{/if}>
         </div>
-            
+        <div class="card-footer text-muted text-right">
+            <a class="btn btn-primary" href="/reimbursement/view" role="button">返回至项目列表</a>
+        </div>
     </div>
 </div>
-
 <script>
-$('#transaction_voucher').change(function() { 
+    $('#transaction_voucher').change(function() { 
     var file = this.files[0];
     var filename = $('#transaction_voucher').val().split('\\').pop();
     var extension = filename.split('.').pop();
@@ -174,7 +192,8 @@ $('#money').on('change', function () {
     }
 });
 
-window.addEventListener("load",function() {
+
+    window.addEventListener("load",function() {
     var forms = document.getElementsByClassName('needs-validation');
     var validation = Array.prototype.filter.call(forms, function (form) {
         form.addEventListener('submit', function (event) {
@@ -186,39 +205,5 @@ window.addEventListener("load",function() {
         }, false);
 
     }, false);
-});
-
+    });
 </script>
-
-
-<{else}>
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            请选择发票类型
-        </div>
-        <{if isset($err_info) }>
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <p><strong><i class="iconfont icon-alert-circle"></i> <{$err_info}></strong></p>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true"><i class="iconfont icon-close"></i></span>
-            </button>
-        </div>
-        <{/if}>
-        <div class="card-body invoice-type-choose">
-                <table class="table" style="height:100%">
-                    <tbody>
-                        <tr>
-                            <td><a class="invoice-choose btn btn-primary" href="?type=1" role="button">纸质发票</a></td>
-                            <td><a class="invoice-choose btn btn-primary" href="?type=0" role="button">电子发票</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-        </div>
-        <div class="text-right card-footer text-muted">
-            <a  class="btn btn-primary" href="/" role="button">返回首页</a>
-        </div>
-    </div>
-</div>
-
-<{/if}>
