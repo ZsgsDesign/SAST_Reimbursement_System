@@ -144,7 +144,7 @@ class ReimbursementController extends BaseController
         $db_user = new Model('users');
         $db_reimbursements = new Model('reimbursements');
         $db_change_log = new Model('change_log');
-        $this->wait_approval_list = $db_reimbursements->findAll(['status=:status', ':status' => 0]);
+        $this->wait_approval_list = $db_reimbursements->findAll(['status=0 AND status!=3']);
         $action = arg('action');
         if ($action == 'approval') {
             $rid = arg('rid');
@@ -163,9 +163,15 @@ class ReimbursementController extends BaseController
             if (empty($rbm)) {
                 return $this->err_info = '找不到该报销项目';
             }
+
             if ($rbm['status'] != 0) {
                 return $this->err_info = '该项目的状态不正确，只可以处理待审核的项目';
             }
+
+            if ($rbm['status'] == 3) {
+                return $this->err_info = '该项目的状态不正确，被挂起的项目不允许进行编辑以及审批';
+            }
+
             $user_info = $db_user->find(['OPENID=:OPENID', ':OPENID' => $this->OPENID]);
             $uid = $user_info['uid'];
 
@@ -183,7 +189,7 @@ class ReimbursementController extends BaseController
             $db_reimbursements->update(['rid=:rid', ':rid' => $rid], $update_row_rbm);
             $db_change_log->create($row_change_log);
             $this->success_info = '审批提交成功,2秒后跳转到该项目';
-            $this->jump('/reimbursements/view/'.$rid, 2000);
+            $this->rid = $rid;
         }
     }
 
@@ -246,11 +252,14 @@ class ReimbursementController extends BaseController
             $this->list = $reim_list;
         } else {
             $this->display_type = 'single';
+
+            //这个action也用于审批的时候显示项目的信息，这个变量($isApproval)用于控制需不需要外层div和应用layout
             $isApproval = arg('approval');
             if ($isApproval) {
                 $this->needDiv = false;
                 $this->layout = null;
             }
+
             $reimDetails = $db_reimbursements->find(['rid=:rid', ':rid' => $rid]);
 
             if (empty($reimDetails)) {
@@ -282,7 +291,18 @@ class ReimbursementController extends BaseController
                 }
 
                 $value['before_status'] = $status_list[$value['before_status']];
-                $value['change_type'] = $value['change_type'] == 0 ? '审批' : ($value['change_type'] == 1 ? '修改' : '管理员操作');
+                $change_type_list = [
+                    '0' => '审批',
+                    '1' => '修改',
+                    '2' => '管理员编辑',
+                    '3' => '挂起',
+                    '4' => '解除挂起',
+                ];
+                $value['change_type'] = array_key_exists($value['change_type'], $change_type_list) ? $change_type_list[$value['change_type']] : '-';
+            }
+
+            if (($user_info['OPENID'] == $this->OPENID && $reimDetails['status'] != 1) || $this->is_admin) {
+                $this->displayEdit = true;
             }
 
             $this->reim = $reimDetails;
@@ -299,6 +319,8 @@ class ReimbursementController extends BaseController
         $db_department = new Model('department');
         $db_reimbursements = new Model('reimbursements');
         $db_change_log = new Model('change_log');
+
+        $action = arg('action');
 
         $this->rid = arg('rid');
         if ($this->rid === null) {
@@ -318,6 +340,32 @@ class ReimbursementController extends BaseController
         $this->invoice_type = empty($rbm['invoice']) ? 1 : 0;
 
         if ($rbm['status'] == 3) {
+            if ($action == 'refresh') {
+                if (!$this->is_admin) {
+                    return $this->error = '权限不足';
+                }
+
+                if ($rbm['status'] != 3) {
+                    return $this->error = '该项目状态不正确，只能对被挂起的项目执行此操作';
+                }
+
+                $update_row_rbm = [
+                    'status' => 0,
+                ];
+                $row_change_log = [
+                    'uid' => $user_info['uid'],
+                    'rid' => $this->rid,
+                    'before_status' => $rbm['status'],
+                    'change_type' => 4,
+                    'remarks' => '-',
+                    'time' => date('Y-m-d H:i:s'),
+                ];
+                $db_reimbursements->update(['rid=:rid', ':rid' => $this->rid], $update_row_rbm);
+                $db_change_log->create($row_change_log);
+
+                return $this->error = '该项目的状态已恢复，可以被审核或编辑';
+            }
+
             if ($this->is_admin) {
                 $this->allow_refresh = 1;
             }
@@ -334,8 +382,6 @@ class ReimbursementController extends BaseController
         $dptm_info = $db_department->find(['did=:did', ':did' => $rbm['department']]);
         $rbm['department'] = empty($dptm_info) ? '未知部门' : $dptm_info['name'];
         $this->reim = $rbm;
-
-        $action = arg('action');
 
         if ($action == 'edit') {
             $name = arg('name');
@@ -439,9 +485,36 @@ class ReimbursementController extends BaseController
 
             $db_change_log->create($row_change_log);
             $db_reimbursements->update(['rid=:rid', ':rid' => $this->rid], $update_row);
-            $this->success_info = '该项目资料编辑成功，2秒后跳转';
-            $this->jump('/reimbursement/view/'.$this->rid);
-        } elseif ($action == 'refresh') {
+            $this->success_info = '该项目资料编辑成功,2秒后跳转';
+        } elseif ($action == 'freeze') {
+            $remarks = arg('remarks');
+            if (empty($remarks)) {
+                return $this->err_info = '缺少参数';
+            }
+
+            if (!$this->is_admin) {
+                return $this->err_info = '权限不足';
+            }
+
+            if ($rbm['status'] == 1) {
+                return $this->err_info = '该项目状态不正确，不可以对已经审批通过的项目执行此操作';
+            }
+
+            $update_row_rbm = [
+                'status' => 3,
+            ];
+            $row_change_log = [
+                'uid' => $user_info['uid'],
+                'rid' => $this->rid,
+                'before_status' => $rbm['status'],
+                'change_type' => 3,
+                'remarks' => $remarks,
+                'time' => date('Y-m-d H:i:s'),
+            ];
+            $db_reimbursements->update(['rid=:rid', ':rid' => $this->rid], $update_row_rbm);
+            $db_change_log->create($row_change_log);
+
+            $this->success_info = '该项目已经冻结，可以查看资料但是不能审批以及编辑';
         }
 
         //处理编辑报销详情

@@ -17,8 +17,34 @@
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <{$success_info}>
             </div>
+            <script>
+                setTimeout(()=>{
+                    window.location = "/reimbursement/view/"+<{$rid}>;
+                },2000);
+            </script>
             <{/if}>
-
+            <{if $is_admin}>
+            <div class="text-right">
+                <button class="btn btn-danger" type="button" data-toggle="collapse" data-target="#freeze_box" aria-expanded="false"
+                        aria-controls="freeze_box">
+                    挂起项目
+                </button>
+            </div>
+            <div class="collapse" id="freeze_box">
+                <form class="needs-validation" action="" method="post" id="freeze_form" novalidate>
+                    <input type="hidden" name="rid" value="<{$rid}>">
+                    <input type="hidden" name="action" value="freeze">
+                    <div class="form-group">
+                        <label for="remarks" class="bmd-label-floating">挂起 - 备注</label>
+                        <textarea class="form-control" name="remarks" id="remarks_freeze" rows="5" required></textarea>
+                        <div class="invalid-feedback">必填字段！</div>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-danger">确认挂起</button>
+                    </div>
+                </form>
+            </div>
+            <{/if}>
             <form class="needs-validation" action="" method="post" id="edit_form" novalidate>
                 <input type="hidden" name="rid" value="<{$rid}>">
                 <input type="hidden" name="action" value="edit">
@@ -102,9 +128,9 @@
                 <strong><{$error}></strong>
             </div>
             <{if isset($allow_refresh) && $allow_refresh}>
-                <form action="" method="post">
+                <form action="" method="POST" class="text-center">
                     <input type="hidden" name="action" value="refresh">
-                    <button type="submit" class="btn btn-primary" style="display: block;">取消挂起 并 恢复到待审核状态</button>
+                    <button type="submit" class="btn btn-primary">取消挂起 并 恢复到待审核状态</button>
                 </form>
             <{/if}>
             <{/if}>

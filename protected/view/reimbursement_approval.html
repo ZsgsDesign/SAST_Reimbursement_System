@@ -39,15 +39,26 @@
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <{$success_info}>
             </div>
+            <script>
+                setTimeout(()=>{
+                    window.location = "/reimbursement/view/"+<{$rid}>;
+                },2000);
+            </script>
             <{/if}>
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-4 col-lg-3">
                     <ul class="list-group">
                         <span>待审批项目</span>
                         <{if isset($wait_approval_list) }>
-                            <{foreach $wait_approval_list as $key => $value}>
-                            <li class="btn btn-default list-group-item active" id="rbm-<{$value['rid']}>"><h6 class="mundb-text-truncate-1"><{$value['name']}></h6><br><p class="mundb-text-truncate-1"><{$value['remarks']}></p></li> <!-- 此处rbm是reimbursement的缩写 -->
-                            <{/foreach}>
+                            <{if !empty($wait_approval_list)}>
+                                <{foreach $wait_approval_list as $key => $value}>
+                                <li class="btn btn-default list-group-item active" id="rbm-<{$value['rid']}>"><h6 class="mundb-text-truncate-1"><{$value['name']}></h6><br><p class="mundb-text-truncate-1"><{$value['remarks']}></p></li> <!-- 此处rbm是reimbursement的缩写 -->
+                                <{/foreach}>
+                            <{else}>
+                                <div class="alert alert-primary text-center" role="alert">
+                                    <strong>当前暂无待处理的项目</strong>
+                                </div>
+                            <{/if}>
                         <{/if}>
                     </ul>
                 </div>
