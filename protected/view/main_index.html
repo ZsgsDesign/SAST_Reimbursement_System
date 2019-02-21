@@ -3,28 +3,138 @@
     width: 100%;
     height: 600px;
 }
+tr{
+    cursor: pointer;
+}
 </style>
 <div class="container mundb-standard-container">
+    <{if $islogin}>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
             <div class="card text-center">
                 <div class="card-header">
-                        <h4 class="card-title">你的报销项目</h4>
+                        <h4 class="card-title">您的待处理报销项目</h4>
                 </div>
                 <div class="card-body">
-                    <p class="card-text">//TODO..</p>
+                    <{if $islogin&&isset($tips_info)}>
+                    <div class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+                        <{$tips_info}>
+                    </div>
+                    <{/if}>
+                    <{if isset($reim_list)&&!empty($reim_list)}>
+                    <{if isset($pager_ing)}>
+                        <small>共 <{$count_ing}> 条记录, <{$pager_ing['total_page']}> 页,当前是第 <{$pager_ing['current_page']}> 页</small>
+                    <{else}>
+                        <small>共 <{$count_ing}> 条记录</small>
+                    <{/if}>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%;">报销项目</th>
+                                <th style="width: 15%;">金额</th>
+                                <th style="width: 20%;">当前状态</th>
+                                <th style="width: 45%;">申报时间</th>
+                            </tr>
+                        </thead>
+                        <{foreach $reim_list as $value}>
+                        <tbody>
+                            <tr id="rbm-<{$value['rid']}>">
+                                <td><{$value['name']}></td>
+                                <td><{$value['money']}></td>
+                                <td><{$value['status']}></td>
+                                <td><{$value['time']}></td>
+                            </tr>
+                        </tbody>
+                        <{/foreach}>
+                    </table>
+                    <{if isset($pager_ing)}>
+                        <ul class="text-center pagination">
+                            <li class="page-item"><a class="page-link" href="?page_ing=<{$pager_ing['prev_page']}>"><strong>&lt;</strong></a></li>
+                            <{foreach $pager_ing['all_pages'] as $value}>
+                            <li class="page-item"><a class="page-link" href="?page_ing=<{$value}>"><{$value}></a></li>
+                            <{/foreach}>
+                            <li class="page-item"><a class="page-link" href="?page_ing=<{$pager_ing['next_page']}>"><strong>&gt;</strong></a></li>
+                            
+                        </ul>
+                    <{/if}>
+                    <{else}>
+                    <div class="alert alert-primary alert-dismissible fade show text-center" role="alert">
+                        <strong>当前您暂无待处理的项目</strong>
+                    </div>
+                    <{/if}>
                 </div>
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
             <div class="card text-center">
                 <div class="card-header">
-                        <h4 class="card-title">这里该放什么呢...</h4>
+                        <h4 class="card-title">您的已通过项目</h4>
                 </div>
                 <div class="card-body">
-                    <p class="card-text">//TODO..</p>
+                        <{if isset($reim_list_ed)&&!empty($reim_list_ed)}>
+                        <{if isset($pager_ed)}>
+                            <small>共 <{$count_ed}> 条记录, <{$pager_ed['total_page']}> 页,当前是第 <{$pager_ed['current_page']}> 页</small>
+                        <{else}>
+                            <small>共 <{$count_ed}> 条记录</small>
+                        <{/if}>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>报销项目</th>
+                                    <th>金额</th>
+                                    <th>申报时间</th>
+                                </tr>
+                            </thead>
+                            <{foreach $reim_list_ed as $value}>
+                            <tbody>
+                                <tr id="rbm-<{$value['rid']}>">
+                                    <td class="mundb-text-truncate-1"><{$value['name']}></td>
+                                    <td><{$value['money']}></td>
+                                    <td><{$value['time']}></td>
+                                </tr>
+                            </tbody>
+                            <{/foreach}>
+                        </table>
+                        <{if isset($pager_ed)}>
+                            <ul class="text-center pagination">
+                                <li class="page-item"><a class="page-link" href="?page_ed=<{$pager_ed['prev_page']}>"><strong>&lt;</strong></a></li>
+                                <{foreach $pager_ing['all_pages'] as $value}>
+                                <li class="page-item"><a class="page-link" href="?page_ed=<{$value}>"><{$value}></a></li>
+                                <{/foreach}>
+                                <li class="page-item"><a class="page-link" href="?page_ed=<{$pager_ed['next_page']}>"><strong>&gt;</strong></a></li>
+                                
+                            </ul>
+                        <{/if}>
+                        <{else}>
+                        <div class="alert alert-primary alert-dismissible fade show text-center" role="alert">
+                            <strong>当前您暂无已通过的项目</strong>
+                        </div>
+                        <{/if}>
                 </div>
             </div>
         </div>
     </div>
+    <{else}>
+    <div class="card">
+        <div class="card-header">
+            提醒
+        </div>
+        <div class="card-body">
+            <p class="card-text">欢迎访问</p>
+            <div>
+                <strong class="text-center">SAST - 报销系统</strong>
+            </div>
+            <p class="card-text">请先登录</p>
+        </div>
+        <div class="card-footer text-muted text-right">
+            <a class="btn btn-primary" href="/account/" role="button">前往登陆界面</a>
+        </div>
+    </div>
+    <{/if}>
 </div>
+<script>
+    $('tr').click(function(){
+        var rid = $(this).attr('id').split('-')[1];
+        window.location = '/reimbursement/view/' + rid;
+    });
+</script>

@@ -211,13 +211,64 @@ class ReimbursementController extends BaseController
         $rid = arg('rid');
         if ($rid == null) {
             $this->display_type = 'list';
+            $page = arg('p', 1);
+            $search_key = arg('search_key');
 
             $auth_info = $db_auth->find(['uid=:uid', ':uid' => $uid]);
-            if ($auth_info['auth'] != 0) {
-                $reim_list = $db_reimbursements->findAll(null, 'rid desc');
+
+            if (empty($search_key)) {
+                if ($auth_info['auth'] != 0) {
+                    $reim_list = $db_reimbursements->findAll(null, 'rid desc', '*', [$page, 20, 7]);
+                } else {
+                    $reim_list = $db_reimbursements->findAll(['uid=:uid', ':uid' => $uid], 'rid desc', '*', [$page, 20, 7]);
+                }
             } else {
-                $reim_list = $db_reimbursements->findAll(['uid=:uid', ':uid' => $uid], null, '*');
+                //看看有没有相关的部门
+                $search_condition = '';
+                $search_condition_parm = array();
+                $dptm_result = $db_department->find(['name=:name', ':name' => $search_key]);
+                if (!empty($dptm_result)) {
+                    $did_search = $dptm_result['did'];
+                    $search_condition .= '(department=:did';
+                    $search_condition_parm[':did'] = $did_search;
+                }
+                //找相关的用户
+                $user_result = $db_user->find(['name=:name OR SID=:SID OR real_name=:real_name', ':name' => $search_key, ':SID' => $search_key, ':real_name' => $search_key]);
+                if (!empty($user_result)) {
+                    $uid_search = $user_result['uid'];
+                    //判断前面有没有相关部门
+                    if (!empty($search_condition)) {
+                        $search_condition .= ' OR uid=:uid_search';
+                    } else {
+                        $search_condition .= '(uid=:uid_search';
+                    }
+                    $search_condition_parm[':uid_search'] = $uid_search;
+                }
+
+                //看看有没有相关的用户和部门决定语句结构
+                if (!empty($search_condition)) {
+                    $search_condition .= ' OR name=:name)';
+                } else {
+                    $search_condition .= 'name=:name';
+                }
+                $search_condition_parm[':name'] = $search_key;
+
+                if ($auth_info['auth'] != 0) {
+                    array_push($search_condition_parm, $search_condition);
+                    $reim_list = $db_reimbursements->findAll($search_condition_parm, 'rid desc', '*', [$page, 20, 7]);
+                } else {
+                    $search_condition .= 'AND uid=:uid';
+                    $search_condition_parm[':uid'] = $uid;
+                    array_push($search_condition_parm, $search_condition);
+                    $reim_list = $db_reimbursements->findAll(['uid=:uid', ':uid' => $uid], 'rid desc', '*', [$page, 20, 7]);
+                }
             }
+
+            if (!empty($db_reimbursements->page)) {
+                $this->pager = $db_reimbursements->page;
+            }
+
+            $this->count = count($reim_list);
 
             $dptm_info = $db_department->findAll();
             $temp = array();

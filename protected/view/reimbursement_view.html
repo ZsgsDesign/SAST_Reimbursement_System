@@ -124,7 +124,10 @@ tr{
                     </div>
                 <{/if}>
             <{/if}>
-        </div>
+            </div>
+            <div class="text-right">
+                <a class="btn btn-primary" href="/" role="button">返回主页</a>
+            </div>
         </div>
     <{if $needDiv}>
     </div>
@@ -135,12 +138,18 @@ tr{
             报销记录查询
         </div>
         <div class="card-body">
-            <form class="text-right" method="POST" action="?action=search">
+            <form class="text-right" method="POST" action="">
                 <div class="form-group">
                     <label for="search_key">查找记录</label>
                     <input type="text" name="search_key" id="search_key" class="form-control" placeholder="报销项目、报销人、部门">
                 </div>
             </form>
+            <{if isset($pager)}>
+                <small>共 <{$count}> 条记录, <{$pager['total_page']}> 页,当前是第 <{$pager['current_page']}> 页</small>
+            <{else}>
+                <small>共 <{$count}> 条记录</small>
+            <{/if}>
+            <{if !empty($list)}>
             <table class="table table-responsive table-hover">
                 <thead>
                     <tr>
@@ -152,25 +161,33 @@ tr{
                         <th>申报时间</th>
                     </tr>
                 </thead>
-                <{if !empty($list)}>
-                    <tbody>
-                        <{foreach $list as $value}>
-                            <tr class="rbm-index" id="rbm-<{$value['rid']}>">
-                                <td><{$value['name']}></td>
-                                <td><{$value['u_name']}></td>
-                                <td><{$value['department']}></td>
-                                <td><{$value['money']}></td>
-                                <td><{$value['status']}></td>
-                                <td><{$value['time']}></td>
-                            </tr>
-                        <{/foreach}>
-                    </tbody>
-                <{else}>
-                    <div class="alert alert-primary text-center" role="alert">
-                        <strong>当前暂无可见的项目</strong>
-                    </div>
-                <{/if}>
+                <tbody>
+                    <{foreach $list as $value}>
+                        <tr class="rbm-index" id="rbm-<{$value['rid']}>">
+                            <td><{$value['name']}></td>
+                            <td><{$value['u_name']}></td>
+                            <td><{$value['department']}></td>
+                            <td><{$value['money']}></td>
+                            <td><{$value['status']}></td>
+                            <td><{$value['time']}></td>
+                        </tr>
+                    <{/foreach}>
+                </tbody>
             </table>
+            <{else}>
+                <div class="alert alert-primary text-center" role="alert">
+                    <strong>当前暂无符合条件并且可见的项目</strong>
+                </div>
+            <{/if}>
+            <{if isset($pager)}>
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="?p=<{$pager['prev_page']}>"><strong>&lt;</strong></a></li>
+                    <{foreach $pager['all_pages'] as $value}>
+                    <li class="page-item"><a class="page-link" href="?p=<{$value}>"><{$value}></a></li>
+                    <{/foreach}>
+                    <li class="page-item"><a class="page-link" href="?p=<{$pager['next_page']}>"><strong>&gt;</strong></a></li>
+                </ul>
+            <{/if}>
         </div>
     </div>
     <{/if}>

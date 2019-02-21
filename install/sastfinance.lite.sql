@@ -2,6 +2,7 @@ DROP Database IF EXISTS `<{DB_NAME}>`;
 CREATE Database <{DB_NAME}>;
 USE <{DB_NAME}>;
 
+SET default_storage_engine=MYISAM;
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
