@@ -64,7 +64,7 @@
                     <{if !$invoice_type}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group">
-                            <label id="invoice_tip" class="btn btn-danger" for="invoice">点这里上传发票</label>
+                            <label id="invoice_tip" class="btn btn-danger" for="invoice"><i class="MDI file-pdf-box"></i> 点这里上传发票</label>
                             <input type="file" class="form-control-file" name="invoice" id="invoice" aria-describedby="invoiceHelp" style="display: none">
                             <small id="invoiceHelp" class="form-text text-muted"> 请上传完整的pdf发票文件</small>
                         </div>
@@ -72,7 +72,7 @@
                     <{/if}>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group">
-                            <label class="btn btn-danger" for="transaction_voucher">点这里上传交易凭证</label>
+                            <label id="transaction_voucher_tip" class="btn btn-danger" for="transaction_voucher"><i class="MDI image"></i> 点这里上传交易凭证</label>
                             <input type="file" class="form-control-file" name="transaction_voucher" id="transaction_voucher" aria-describedby="transaction_voucherHelp" style="display: none">
                             <img id="preview_transaction_voucher" class="img-fluid" src="" class="img-fluid hidden"><small id="preview_tag" class="form-text text-muted" style="display: none">预览</small><br>
                             <small id="transaction_voucherHelp" class="form-text text-muted"> 请上传清晰的jpg图片文件</small>
@@ -80,7 +80,7 @@
                     </div>
                     <div class="text-center col-xs-12 col-sm-12 col-md-4 col-lg-4">
                         <div class="form-group">
-                            <label class="btn btn-danger" for="declaration">点这里上传申报单</label>
+                            <label id="declaration_tip" class="btn btn-danger" for="declaration"><i class="MDI file-word-box"></i> 点这里上传申报单</label>
                             <input type="file" class="form-control-file" name="declaration" id="declaration" aria-describedby="declarationHelp" style="display: none">
                             <small id="declarationHelp" class="form-text text-muted"> 请上传docx文件</small>
                         </div>
@@ -103,10 +103,12 @@ $('#transaction_voucher').change(function() {
     var extension = filename.split('.').pop();
     if(extension != 'jpg'){
         $('#transaction_voucherHelp').text('只允许上传jpg类型的图片文件!');
+        $('#transaction_voucher_tip').removeClass('btn-success').addClass('btn-danger');
         $('#preview_transaction_voucher').fadeOut();
         $('#preview_tag').fadeOut();
     }else{
         $('#transaction_voucherHelp').text('已选择: '+filename);
+        $('#transaction_voucher_tip').removeClass('btn-danger').addClass('btn-success');
         var reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
@@ -122,8 +124,10 @@ $('#declaration').change(function() {
     var extension = filename.split('.').pop();
     if(extension != 'docx'){
         $('#declarationHelp').text('只允许上传docx类型的文件!');
+        $('#declaration_tip').removeClass('btn-success').addClass('btn-danger');
     }else{
         $('#declarationHelp').text('已选择: '+filename);
+        $('#declaration_tip').removeClass('btn-danger').addClass('btn-success');
     }
 });
 
@@ -132,8 +136,10 @@ $('#invoice').change(function() {
     var extension = filename.split('.').pop();
     if(extension != 'pdf'){
         $('#invoiceHelp').text('只允许上传pdf类型的文件!');
+        $('#invoice_tip').removeClass('btn-success').addClass('btn-danger');
     }else{
         $('#invoiceHelp').text('已选择: '+filename);
+        $('#invoice_tip').removeClass('btn-danger').addClass('btn-success');
     }
 });
 
@@ -209,8 +215,8 @@ window.addEventListener("load",function() {
                 <table class="table" style="height:100%">
                     <tbody>
                         <tr>
-                            <td><a class="invoice-choose btn btn-primary" href="?type=1" role="button">纸质发票</a></td>
-                            <td><a class="invoice-choose btn btn-primary" href="?type=0" role="button">电子发票</a></td>
+                            <td><a class="invoice-choose btn btn-primary" href="?type=1" role="button"><i class="MDI script"></i> 纸质发票</a></td>
+                            <td><a class="invoice-choose btn btn-primary" href="?type=0" role="button"><i class="MDI file-pdf-box"></i> 电子发票</a></td>
                         </tr>
                     </tbody>
                 </table>

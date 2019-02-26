@@ -211,6 +211,7 @@ class AccountController extends BaseController
             ]);
             move_uploaded_file($_FILES['portrait']['tmp_name'], APP_DIR.'/file/img/'.$hash.'.jpg');
             $this->success_info = '头像已修改成功';
+            $this->portrait = $hash;
         } elseif ($action == 'edit_profile') {
             $update_row = array();
             $name = arg('name');

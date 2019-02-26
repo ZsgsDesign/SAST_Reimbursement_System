@@ -37,7 +37,7 @@ tr{
         </div>
         <div class="card-body">
             <div class="text-right">
-                <a class="btn btn-danger" href="/reimbursement/edit/<{$reim['rid']}>" role="button">编辑</a>
+                <a class="btn btn-danger" href="/reimbursement/edit/<{$reim['rid']}>" role="button"><i class="MDI pencil"></i> 编辑</a>
             </div>
             <table class="table">
                 <tbody>
@@ -101,7 +101,7 @@ tr{
                 </div>
             </div>
             <button class="btn-fluid btn btn-primary" type="button" data-toggle="collapse" data-target="#log" aria-expanded="false" aria-controls="log">
-                查看编辑/审批记录
+                <i class="MDI eye"></i> 查看编辑/审批记录
             </button>
             <div class="collapse" id="log">
             <{if isset($change_log)}>

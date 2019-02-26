@@ -27,10 +27,11 @@
             <div class="text-right">
                 <button class="btn btn-danger" type="button" data-toggle="collapse" data-target="#freeze_box" aria-expanded="false"
                         aria-controls="freeze_box">
-                    挂起项目
+                    <i class="MDI lock"></i> 挂起项目
                 </button>
             </div>
             <div class="collapse" id="freeze_box">
+                <small class="text-muted text-center" style="display: block;width: 100%">项目被挂起后可以进行的操作只有取消挂起</small>
                 <form class="needs-validation" action="" method="post" id="freeze_form" novalidate>
                     <input type="hidden" name="rid" value="<{$rid}>">
                     <input type="hidden" name="action" value="freeze">

@@ -26,23 +26,23 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">你好，<{ $display_name }></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownId">
-                        <a class="dropdown-item" href="/account/profile"><i class="MDI account-circle"></i> 我的资料</a>
-                        <a class="dropdown-item" href="/Reimbursement/Initiate">发起报销</a>
+                        <a class="dropdown-item" href="/account/profile"><i class="MDI account"></i> 我的资料</a>
+                        <a class="dropdown-item" href="/Reimbursement/Initiate"><i class="MDI note-plus"></i> 发起报销</a>
                         <{if $is_judge}>
-                            <a class="dropdown-item" href="/Reimbursement/approval">开始审批</a>
+                            <a class="dropdown-item" href="/Reimbursement/approval"><i class="MDI gavel"></i> 开始审批</a>
                         <{/if}>
                         <{if $is_judge||$is_admin}>
-                            <a class="dropdown-item" href="/Reimbursement/view">报销查看</a>
-                            <a class="dropdown-item" href="/Reimbursement/stat">报销统计</a>
+                            <a class="dropdown-item" href="/Reimbursement/view"><i class="MDI eye"></i> 报销查看</a>
+                            <a class="dropdown-item" href="/Reimbursement/stat"><i class="MDI trending-up"></i> 报销统计</a>
                         <{/if}>
                         <{if $is_admin}>
-                            <a class="dropdown-item" href="/admin">用户管理</a>
+                            <a class="dropdown-item" href="/admin"><i class="MDI account-settings-variant"></i> 用户管理</a>
                         <{/if}>
-                        <a class="dropdown-item" href="/account/logout">退出登陆</a>
+                        <a class="dropdown-item" href="/account/logout"><i class="MDI logout"></i> 退出登陆</a>
                     </div>
                 </li>
             <{else}>
-            <a class="nav-link" href="/account">登陆 / 注册</a>
+            <a class="nav-link" href="/account"><i class="MDI login"></i> 登陆 / 注册</a>
             <{/if}>
         </ul>
         

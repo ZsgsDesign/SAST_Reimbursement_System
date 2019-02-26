@@ -5,6 +5,10 @@
     #cpw-card{
         margin-top: 2rem;
     }
+    .image-placeholder{
+        font-size: 5rem;
+        font-weight: bolder;
+    }
 </style>
 <div class="container mundb-standard-container">
     <div class="card">
@@ -14,12 +18,12 @@
         <div class="card-body">
             <{if isset($err_info)}>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <{$err_info}>
+                <i class="MDI alert"></i> <{$err_info}>
             </div>
             <{/if}>
             <{if isset($success_info)}>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <{$success_info}>
+                <i class="MDI check"></i> <{$success_info}>
             </div>
             <{/if}>
             <div class="row">
@@ -27,7 +31,7 @@
                     <{if isset($portrait)}> 
                     <img class="img-fluid" src="/file/img/<{$portrait}>.jpg" alt="head">
                     <{else}>
-                    <h1>头像</h1>
+                    <span class="image-placeholder"><i class="MDI image"></i></span>
                     <{/if}>
                     <p>
                         <a class="btn btn-primary" data-toggle="collapse" href="#portrait_upload" aria-expanded="false" aria-controls="portrait_upload">
@@ -38,7 +42,7 @@
                         <div class="container">
                             <form action="?action=upload_portrait" method="POST" enctype="multipart/form-data" >
                                 <div class="form-group">
-                                    <label class="btn btn-default" for="portrait">浏览本地文件</label>
+                                    <label id="portrait_upload_tip" class="btn btn-danger" for="portrait"><i class="MDI folder-image"></i> 浏览本地文件</label>
                                     <input type="file" class="form-control-file" name="portrait" id="portrait" placeholder="" aria-describedby="fileHelpId" style="display:none" required>
                                     <small id="fileHelpId" class="form-text text-muted">仅支持.jpg图片文件</small>
                                 </div>
@@ -69,7 +73,7 @@
                             </div>
                             <div class="card-footer text-muted text-right">
                                 <a class="btn btn-default" href="/account/profile">返回</a>
-                                <button type="submit" class="btn btn-danger">确认编辑</button>
+                                <button type="submit" class="btn btn-danger"><i class="MDI check"></i> 确认编辑</button>
                             </div>
                         </form>
                     </div>
@@ -106,7 +110,7 @@
                 </div>
                 <{/if}>
                 <div class="card-footer text-right">
-                    <button type="submit" class="btn btn-danger">确认更改</button>
+                    <button type="submit" class="btn btn-danger"><i class="MDI check"></i> 确认更改</button>
                 </div>
             </form>
         </div>
@@ -124,4 +128,17 @@ var validation = Array.prototype.filter.call(forms, function (form) {
     }, false);
 
 }, false);
+
+$('#portrait').change(function () {
+    var file = this.files[0];
+    var filename = $('#portrait').val().split('\\').pop();
+    var extension = filename.split('.').pop();
+    if(extension != 'jpg'){
+        $('#fileHelpId').text('只允许上传jpg类型的图片文件!');
+        $('#portrait_upload_tip').removeClass('btn-success').addClass('btn-danger');
+    }else{
+        $('#fileHelpId').text('已选择: '+filename);
+        $('#portrait_upload_tip').removeClass('btn-danger').addClass('btn-success');
+    }
+});
 </script>

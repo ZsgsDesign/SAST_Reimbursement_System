@@ -5,6 +5,10 @@
     #head{
         margin-bottom: 1rem;
     }
+    .image-placeholder{
+        font-size: 5rem;
+        font-weight: bolder;
+    }
 </style>
 <div class="container mundb-standard-container">
     <div class="card">
@@ -17,7 +21,7 @@
                     <{if isset($portrait)}> 
                     <img id="head" class="img-fluid" src="/file/img/<{$portrait}>.jpg" alt="head">
                     <{else}>
-                    <h1>头像</h1>
+                    <span class="image-placeholder"><i class="MDI image"></i></span>
                     <{/if}>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-7">
@@ -70,7 +74,7 @@
         </div>
         <div class="card-footer text-muted text-right">
             <a href="/" class="btn btn-default">返回</a>
-            <a href="/account/editprofile" class="btn btn-primary">编辑资料</a>
+            <a href="/account/editprofile" class="btn btn-danger"><i class="MDI pencil"></i> 编辑资料</a>
         </div>
     </div>
 </div>
