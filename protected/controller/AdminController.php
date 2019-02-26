@@ -48,12 +48,6 @@ class AdminController extends BaseController
         }
     }
 
-    public function actionStat()
-    {
-        //总用户统计相关的功能
-        //TODO...
-    }
-
     public function actionUserManage()
     {
         if (!$this->islogin) {
@@ -89,6 +83,12 @@ class AdminController extends BaseController
                 if (!preg_match($pattern, $until)) {
                     return $this->change_auth_err_info = '传入参数异常,请不要乱来';
                 }
+            }
+
+            $user_info = $db_user->find(['uid=:uid', ':uid' => $this->uid]);
+
+            if ($user_info['OPENID'] == $this->OPENID) {
+                return $this->change_auth_err_info = '不能修改自己的权限等级';
             }
 
             $db_auth->update(['uid=:uid', ':uid' => $this->uid], [

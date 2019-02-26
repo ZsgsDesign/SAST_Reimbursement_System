@@ -178,6 +178,9 @@ class ReimbursementController extends BaseController
             $update_row_rbm = [
                 'status' => $result,
             ];
+            if ($result == 1) {
+                $update_row_rbm['time_adopt'] = date('Y-m-d H:i:s');
+            }
             $row_change_log = [
                 'uid' => $uid,
                 'rid' => $rid,
@@ -572,16 +575,126 @@ class ReimbursementController extends BaseController
         //TODO...
     }
 
-    public function actionStatisticsTotality()
+    public function actionStat()
     {
+        if (!$this->islogin) {
+            $this->jump('/account');
+        }
+
+        if (!$this->is_judge && !$this->is_admin) {
+            return $this->error = '权限不足';
+        }
+
+        $db_reimbursements = new Model('reimbursements');
+        $db_department = new Model('department');
+
+        $this->range = arg('range', 'week');
+        foreach (range(1, 1024) as $value) {
+            $result = $db_reimbursements->find(['rid=:rid', ':rid' => $value]);
+            if (!empty($result)) {
+                $server_start = strtotime($result['time']);
+                $time_now = time();
+                break;
+            }
+        }
+        $this->range_list = [];
+        $time_start = arg('time_start');
+        $time_end = arg('time_end');
+        $pattern_Ymd = '/^([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})-(((0[13578]|1[02])-(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)-(0[1-9]|[12][0-9]|30))|(02-(0[1-9]|[1][0-9]|2[0-8])))$/';
+
+        if ($this->range == 'all') {
+            $time_start = date('Y-m-d', $server_start);
+            $time_end = date('Y-m-d', $time_now);
+        }
+
+        if (empty($time_start) || empty($time_end) || !preg_match($pattern_Ymd, $time_start) || !preg_match($pattern_Ymd, $time_end)) {
+            if ($this->range == 'user-defined') {
+                return $this->input_range = true;
+            }
+
+            switch ($this->range) {
+                case 'week':
+                    while ($server_start < $time_now) {
+                        array_push($this->range_list, [
+                            'time_start' => explode(' ', date('Y-m-d', strtotime('this week Monday', $server_start)))[0],
+                            'time_end' => explode(' ', date('Y-m-d', strtotime('this week Sunday', $server_start)))[0],
+                        ]);
+                        $server_start += 7 * 24 * 60 * 60;
+                    }
+                break;
+                case 'month':
+                    $server_start = strtotime(date('Y-m-01 00:00:00', $server_start));
+                    while ($server_start < $time_now) {
+                        array_push($this->range_list, [
+                            'time_start' => explode(' ', date('Y-m-d', $server_start))[0],
+                            'time_end' => explode(' ', date('Y-m-d', strtotime(date('Y-m-d', $server_start).'+1 month -1 day')))[0],
+                        ]);
+                        $server_start = strtotime(date('Y-m-d H:i:s', $server_start).' +1 month');
+                    }
+                break;
+                case 'season':
+                    $season = floor(date('m', $server_start) / 3) * 3 + 1;
+                    $season = strlen($season.'') == 1 ? '0'.$season : $season;
+                    $server_start = strtotime(date("Y-{$season}-01 00:00:00"));
+
+                    while ($server_start < $time_now) {
+                        array_push($this->range_list, [
+                            'time_start' => explode(' ', date("Y-{$season}-01", $server_start))[0],
+                            'time_end' => explode(' ', date('Y-m-d', strtotime(date('Y-m-d H:i:s', $server_start).' +3 month -1 day')))[0],
+                        ]);
+                        $server_start = strtotime(date('Y-m-d H:i:s', $server_start).' +3 month');
+                    }
+                break;
+                case 'year':
+                    $server_start = strtotime(date('Y-01-01 00:00:00', $server_start));
+
+                    while ($server_start < $time_now) {
+                        array_push($this->range_list, [
+                            'time_start' => explode(' ', date('Y-01-01', $server_start))[0],
+                            'time_end' => explode(' ', date('Y-12-31', $server_start))[0],
+                        ]);
+                        $server_start = strtotime(date('Y-01-01 00:00:00', $server_start).' +12 month');
+                    }
+                break;
+            }
+
+            return;
+        }
+
+        $time_start .= ' 00:00:00';
+        $time_end .= ' 23:59:59';
+
+        $department_name = [];
+        $return_list = [
+            'money_sum' => 0,
+            'department_stat' => [],
+            'time_start' => explode(' ', $time_start)[0],
+            'time_end' => explode(' ', $time_end)[0],
+        ];
+        $reim_list = $db_reimbursements->findAll(['status=1 AND time_adopt > :time_start AND time_adopt < :time_end', ':time_start' => $time_start, ':time_end' => $time_end]);
+        if (!empty($reim_list)) {
+            foreach ($reim_list as $value) {
+                $return_list['money_sum'] += $value['money'];
+                if (array_key_exists($value['department'], $department_name)) {
+                    $return_list['department_stat'][$value['department']]['money_sum'] += $value['money'];
+                    array_push($return_list['department_stat'][$value['department']]['reim'], $value);
+                } else {
+                    $dptm = $db_department->find(['did=:did', ':did' => $value['department']]);
+                    $department_name[$value['department']] = $dptm['name'];
+                    $return_list['department_stat'][$value['department']] = [
+                        'd_name' => $department_name[$value['department']],
+                        'money_sum' => $value['money'],
+                        'reim' => [$value],
+                    ];
+                }
+            }
+            array_multisort(array_column($return_list['department_stat'], 'money_sum'), SORT_DESC, $return_list['department_stat']);
+            $this->return_list = $return_list;
+        }
+
+        // $this->time;
         //处理总体统计详情有关的东西,比如总支出什么的
         //TODO..
-    }
-
-    public function actionDepartmentStatistics()
-    {
-        //查看某个部门的支出报销详情
-        //TODO...
     }
 
     //We can do more.

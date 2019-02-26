@@ -6,6 +6,10 @@
 tr{
     cursor: pointer;
 }
+.login-tip{
+    padding: 8rem;
+    font-size: 2rem;
+}
 </style>
 <div class="container mundb-standard-container">
     <{if $islogin}>
@@ -119,11 +123,12 @@ tr{
         <div class="card-header">
             提醒
         </div>
-        <div class="card-body">
+        <div class="card-body text-center text-muted login-tip">
             <p class="card-text">欢迎访问</p>
             <div>
                 <strong class="text-center">SAST - 报销系统</strong>
             </div>
+            <br />
             <p class="card-text">请先登录</p>
         </div>
         <div class="card-footer text-muted text-right">

@@ -1,0 +1,115 @@
+<style>
+.range-check{
+    width: 16%
+}
+.range-check-box{
+    display: block;
+}
+.table{
+    display: table;
+}
+#money-sum{
+    margin: 2rem 0;
+}
+</style>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            报销项目统计
+        </div>
+        <div class="card-body">
+            <div class="range-check-box btn-group">
+                <a class="range-check btn btn-primary <{if $range=='week'}>active<{/if}>" href="?range=week" role="button">周</a>
+                <a class="range-check btn btn-primary <{if $range=='month'}>active<{/if}>" href="?range=month" role="button">月</a>
+                <a class="range-check btn btn-primary <{if $range=='season'}>active<{/if}>" href="?range=season" role="button">季</a>
+                <a class="range-check btn btn-primary <{if $range=='year'}>active<{/if}>" href="?range=year" role="button">年</a>
+                <a class="range-check btn btn-primary <{if $range=='all'}>active<{/if}>" href="?range=all" role="button">全部</a>
+                <a class="range-check btn btn-primary <{if $range=='user-defined'}>active<{/if}>" href="?range=user-defined" role="button">自定义范围</a>
+            </div>
+            <div class="container">
+                    <{if isset($range_list)&&!isset($return_list)}>
+                    <span class="text-muted">请选择时间段:</span>
+                    <{foreach $range_list as $value}>
+                        <form method="POST">
+                            <input type="hidden" name="time_start" value="<{$value['time_start']}>">
+                            <input type="hidden" name="time_end" value="<{$value['time_end']}>">
+                            <button type="submit" class="btn btn-primary text-muted text-center" style="display: block;width: 100%"><{$value['time_start']}> ~ <{$value['time_end']}></button>
+                        </form>
+                    <{/foreach}>
+                <{/if}>
+                <{if isset($input_range) && $input_range}>
+                    <form class="needs-validation" method="post" novalidate>
+                        <div class="form-group">
+                            <label for="time_start" class="text-muted">开始时间</label>
+                            <input type="date" name="time_start" class="form-control" id="time_start" required>
+                            <div class="invalid-feedback">必须填写的字段</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="time_end" class="text-muted">结束时间</label>
+                            <input type="date" name="time_end" class="form-control" id="time_end" required>
+                            <div class="invalid-feedback">必须填写的字段</div>
+                        </div>
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-danger">获取统计结果</button>
+                        </div>
+                    </form>
+                <{/if}>
+                <{if isset($return_list)}>
+                    <span class="text-muted">从 <{$return_list['time_start']}> 到 <{$return_list['time_end']}> 的统计数据如下</span>
+                    <div id="result" class="text-muted" style="display: none">
+                        <h4 class="text-center" id="money-sum">总共支出 <span class="text-danger"><{$return_list['money_sum']}></span> 元</h4>
+                        <p>各部门支出如下:</p>
+                        <{foreach $return_list['department_stat'] as $key => $value}>
+                            <div>
+                                <h6 class="text-center"><{$value['d_name']}> 共支出 <{$value['money_sum']}> 元 </h6><br>
+                                <a style="display: block;width: 100%" class="btn btn-primary text-center collapse-detials" data-toggle="collapse" href="#detail-<{$key}>" aria-expanded="false" aria-controls="detail-<{$key}>">
+                                    点击查看详情
+                                </a>
+                                <div class="collapse" id="detail-<{$key}>">
+                                    <small class="text-muted text-center">点击表格项目可前往项目详情</small>
+                                    <table class="table table-responsive table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>报销项目</th>
+                                                <th>申报金额</th>
+                                                <th>申报时间</th>
+                                                <th>通过时间</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <{foreach $value['reim'] as $value_reim}>
+                                                <tr class="rbm-index" id="rbm-<{$value_reim['rid']}>">
+                                                    <td><{$value_reim['name']}></td>
+                                                    <td><{$value_reim['money']}></td>
+                                                    <td><{$value_reim['time']}></td>
+                                                    <td><{$value_reim['time_adopt']}></td>
+                                                </tr>
+                                            <{/foreach}>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        <{/foreach}>
+                    </div>
+                <{/if}>
+            </div>
+        </div>
+        <div class="text-right card-footer text-muted">
+            <a class="btn btn-primary" href="/" role="button">返回主页</a>
+        </div>
+    </div>
+</div>
+<script>
+    $('.collapse-detials').click(function () {
+        if ($(this).text() == '点击查看详情') {
+            $(this).text('点击收起');
+        }else{
+            $(this).text('点击查看详情');
+        }
+    });
+    $('tr.rbm-index').click(function () {
+        var rid = $(this).attr('id').split('-')[1];
+        window.location = '/reimbursement/view/'+rid;
+    });
+    $('#result').slideDown();
+</script>

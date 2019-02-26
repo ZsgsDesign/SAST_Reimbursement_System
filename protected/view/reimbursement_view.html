@@ -58,6 +58,16 @@ tr{
                         <td id="rbm-money"><{$reim['money']}></td>
                     </tr>
                     <tr>
+                        <td class="td-l">申报时间</td>
+                        <td id="rbm-money"><{$reim['time']}></td>
+                    </tr>
+                    <{if !empty($reim['time_adopt'])}>
+                    <tr>
+                        <td class="td-l">通过时间</td>
+                        <td id="rbm-money"><{$reim['time_adopt']}></td>
+                    </tr>
+                    <{/if}>
+                    <tr>
                         <td class="td-l">当前状态</td>
                         <td id="rbm-status"><{$reim['status']}></td>
                     </tr>

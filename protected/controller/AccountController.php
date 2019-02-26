@@ -87,7 +87,6 @@ class AccountController extends BaseController
                 'uid' => $uid,
                 'auth' => 0,
                 'forever' => 1,
-                'until' => '',
             ];
             $db_authority->create($authority);
             $_SESSION['OPENID'] = $OPENID;
@@ -243,8 +242,7 @@ class AccountController extends BaseController
             $this->name = $name;
             $this->real_name = $real_name;
             $this->department_name = $department;
-            $this->success_info = '信息修改成功，2秒后跳转';
-            $this->jump('/account', 2000);
+            $this->success_info = '信息修改成功';
         }
     }
 

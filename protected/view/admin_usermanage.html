@@ -10,8 +10,8 @@
 </style>
 <div class="container">
     <{if isset($err_info_all)}>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong><h1><{$err_info_all}></h1></strong>
+        <div class="text-center alert alert-danger alert-dismissible fade show" role="alert">
+            <{$err_info_all}>
         </div>
         <script>
             setTimeout('window.location = "/";',1000)

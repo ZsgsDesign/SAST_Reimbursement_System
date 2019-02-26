@@ -18,7 +18,7 @@ CREATE TABLE `users`  (
   `password` varchar(255) NOT NULL,
   `OPENID` varchar(255) NOT NULL,
   `SID` varchar(255) NOT NULL,
-  `rtime` varchar(255) NOT NULL,
+  `rtime` datetime NOT NULL,
   `portrait` varchar(255) DEFAULT NULL COMMENT '头像',
   `ip` varchar(255) NOT NULL,
   `department` int DEFAULT -1 COMMENT '所属部门',
@@ -35,7 +35,7 @@ CREATE TABLE `authority`  (
   `uid` int(11) UNSIGNED NOT NULL,
   `auth` tinyint DEFAULT 0 COMMENT '权限等级?',
   `forever` tinyint DEFAULT 1 COMMENT '永久权限?',
-  `until` varchar(255) NOT NULL COMMENT '权限有效期',
+  `until` datetime DEFAULT NULL COMMENT '权限有效期',
   PRIMARY KEY (`auth_id`)
 );
 
@@ -54,7 +54,8 @@ CREATE TABLE `reimbursements`  (
   `invoice` varchar(255) DEFAULT NULL COMMENT '发票文件',
   `transaction_voucher` varchar(255) DEFAULT NULL COMMENT '交易凭证',
   `declaration` varchar(255) DEFAULT NULL COMMENT '申报单',
-  `time` varchar(255) DEFAULT NULL COMMENT '申报日期',
+  `time` datetime DEFAULT NULL COMMENT '申报日期',
+  `time_adopt` datetime DEFAULT NULL COMMENT '通过日期',
   PRIMARY KEY (`rid`)
 );
 
@@ -69,7 +70,7 @@ CREATE TABLE `change_log`  (
   `change_type` tinyint DEFAULT 0 COMMENT '操作类型',
   `before_status` tinyint DEFAULT 0 COMMENT '操作前状态',
   `remarks` varchar(255) NOT NULL COMMENT '备注',
-  `time` varchar(255) DEFAULT NULL COMMENT '审批日期',
+  `time` datetime DEFAULT NULL COMMENT '审批日期',
   PRIMARY KEY (`clid`)
 );
 
