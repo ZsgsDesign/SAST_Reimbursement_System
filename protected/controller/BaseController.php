@@ -51,4 +51,12 @@ class BaseController extends Controller
         echo "<html><head><meta http-equiv='refresh' content='{$delay};url={$url}'></head><body></body></html>";
         exit;
     }
+
+    public static function err404($controller_name, $action_name)
+    {
+        header('HTTP/1.0 404 Not Found');
+        $controlObj = new BaseController();
+        $controlObj->display('404/index.html');
+        exit;
+    }
 }

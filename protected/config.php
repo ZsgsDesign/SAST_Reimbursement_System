@@ -47,7 +47,7 @@ $domain = array(
     ),
 
     'cwxt' => array( // 调试配置
-        'debug' => 1,
+        'debug' => 0,
         'maintain' => 0,
         'mysql' => array(
             'MYSQL_HOST' => CONFIG::GET('DEBUG_MYSQL_HOST'),
