@@ -1,0 +1,77 @@
+<style>
+#email_form{
+    margin:2rem 0;
+}
+</style>
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            密码重置
+        </div>
+        <div class="card-body">
+            <{if isset($err_info)}>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="MDI alert"></i> <{$err_info}>
+            </div>
+            <{/if}>
+            <{if isset($success_info)}>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="MDI check"></i> <{$success_info}>
+            </div>
+            <script>
+                setTimeout(()=>{
+                    window.location = '/account';
+                },1000)
+            </script>
+            <{/if}>
+            <{if $step==0}>
+            <form id="email_form" class="needs-validation" method="post" novalidate>
+                <div class="form-group">
+                    <label for="email" class="bmd-label-floating">注册时使用的电子邮箱</label>
+                    <input type="email" name="email" class="form-control" id="email" required>
+                    <div class="invalid-feedback">必须填写的项目</div>
+                </div>
+                <div class="text-right">
+                    <button id="email_submit" type="submit" class="btn btn-danger">确定</button>
+                </div>
+            </form>
+            <{/if}>
+            <{if $step==1}>
+            <form id="pass_form" class="needs-validation" method="post" novalidate>
+                <input type="hidden" name="uid" value="<{$uid}>">
+                <input type="hidden" name="ret" value="<{$ret}>">
+                <div class="form-group">
+                    <label for="new_password" class="bmd-label-floating">新密码</label>
+                    <input type="password" name="new_password" class="form-control" id="new_password" required>
+                    <div class="invalid-feedback">必须填写的项目</div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password" class="bmd-label-floating">确认新密码</label>
+                    <input type="password" name="confirm_password" class="form-control" id="confirm_password" required>
+                    <div class="invalid-feedback">必须填写的项目</div>
+                </div>
+                <div class="text-right">
+                    <button id="cpw_submit" type="submit" class="btn btn-danger">确定</button>
+                </div>
+               
+            </form>
+            <{/if}>
+        </div>
+        <div class="card-footer text-right text-muted">
+            <a class="btn btn-primary" href="/account" role="button">返回</a>
+        </div>
+    </div>
+</div>
+<script>
+    document.querySelector('#cpw_submit').addEventListener('click',function (event) {
+        if(document.querySelector('#new_password').value != document.querySelector('#confirm_password').value){
+            event.preventDefault();
+            event.stopPropagation();
+            alert('新旧密码不一样');
+        }
+    })
+    $('#email_submit').click(function () {
+        $('#email').attr('readonly') = true;
+        $(this).attr('disabled') = true;
+    })
+</script>

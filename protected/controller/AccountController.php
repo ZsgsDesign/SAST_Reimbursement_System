@@ -24,7 +24,7 @@ class AccountController extends BaseController
     //actionIndex方法处理了登陆注册相关的内容
     public function actionIndex()
     {
-        $this->doing = 1;
+        $this->doing = 0;
         //判断是不是已经登陆了，是的话跳转到个人资料
         if ($this->islogin) {
             $this->jump('/account/profile');
@@ -252,6 +252,72 @@ class AccountController extends BaseController
     {
         session_destroy();
         $this->jump('/');
+    }
+
+    public function actionPassReset()
+    {
+        if ($this->islogin) {
+            $this->jump('/');
+        }
+
+        $ret = arg('ret');
+        $uid = arg('uid');
+
+        if (empty($ret) || empty($uid)) {
+            $this->step = 0;
+            $email = arg('email');
+            if (!empty($email)) {
+                $db_user = new Model('users');
+                $user_info = $db_user->find(['email=:email', ':email' => $email]);
+                if (!empty($user_info)) {
+                    $uid = $user_info['uid'];
+                    $OPENID = $user_info['OPENID'];
+                    if (sendRetrievePasswordEmail($email, $uid, $OPENID, $this->ATSAST_DOMAIN)) {
+                        return $this->success_info = '找回密码的邮件已经发往指定的邮箱，请查看';
+                    } else {
+                        return $this->err_info = '邮件发送失败，请联系管理员';
+                    }
+                } else {
+                    return $this->err_info = '用户不存在';
+                }
+            }
+        } else {
+            $db_user = new Model('users');
+            $user_info = $db_user->find(['uid=:uid', ':uid' => $uid]);
+            if (empty($user_info)) {
+                return $this->err_info = '不存在的用户';
+            }
+
+            $OPENID = $user_info['OPENID'];
+
+            if (sha1($OPENID.$uid) !== $ret) {
+                return $this->err_info = '请使用收到的邮件内的链接访问!';
+            }
+
+            $new_pass = arg('new_password');
+            $confirm_pass = arg('confirm_password');
+            if (empty($new_pass) || empty($confirm_pass)) {
+                $this->uid = $uid;
+                $this->step = 1;
+                $this->ret = $ret;
+            } else {
+                if ($new_pass == $confirm_pass) {
+                    $new_pass = $new_pass.'SASTSAST+'.(string) date_create_from_format('Y-m-d H:i:s', $user_info['rtime'])->getTimestamp().'s';
+                    $OPENID = sha1(strtolower($user_info['email']).'@SAST+1s'.md5($new_pass));
+                    $db_user->update(['OPENID=:OPENID', ':OPENID' => $user_info['OPENID']], [
+                            'password' => md5($new_pass),
+                            'OPENID' => $OPENID,
+                        ]);
+                    session_destroy();
+                    $this->jump('/account?cpw=1');
+                } else {
+                    $this->uid = $uid;
+                    $this->step = 1;
+                    $this->ret = $ret;
+                    $this->err_info = '两次密码输入不一致，请重新输入';
+                }
+            }
+        }
     }
 
     //We can do more.

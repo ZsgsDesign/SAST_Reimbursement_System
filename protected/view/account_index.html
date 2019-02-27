@@ -124,7 +124,7 @@
                                 </div>
                             </div>
                             <div class="card-footer text-right">
-                                <a href="<{$ATSAST_DOMAIN}>/account/retrieve"><button type="button" class="btn btn-secondary">忘记密码？</button></a>
+                                <a href="/account/passReset"><button type="button" class="btn btn-secondary">忘记密码？</button></a>
                                 <button type="submit" class="btn btn-danger">登录</button>
                             </div>
                         </form>
@@ -179,18 +179,5 @@
                 $(this).parent().addClass('is-filled');
             }
         });
-
-        var forms = document.getElementsByClassName('needs-validation');
-        var validation = Array.prototype.filter.call(forms, function (form) {
-            form.addEventListener('submit', function (event) {
-                if (form.checkValidity() === false) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-
-        }, false);
-
     }, false);
 </script>
