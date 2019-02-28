@@ -272,10 +272,15 @@ class AccountController extends BaseController
                 if (!empty($user_info)) {
                     $uid = $user_info['uid'];
                     $OPENID = $user_info['OPENID'];
-                    if (sendRetrievePasswordEmail($email, $uid, $OPENID, $this->ATSAST_DOMAIN)) {
-                        return $this->success_info = '找回密码的邮件已经发往指定的邮箱，请查看';
+                    if (!isset($_SESSION['last_send']) || time() - $_SESSION['last_send'] >= 300) {
+                        $_SESSION['last_send'] = time();
+                        if (sendRetrievePasswordEmail($email, $uid, $OPENID, $this->ATSAST_DOMAIN)) {
+                            return $this->success_info = '找回密码的邮件已经发往指定的邮箱，请查看';
+                        } else {
+                            return $this->err_info = '邮件发送失败，请联系管理员';
+                        }
                     } else {
-                        return $this->err_info = '邮件发送失败，请联系管理员';
+                        return $this->err_info = '邮件发送过于频繁！';
                     }
                 } else {
                     return $this->err_info = '用户不存在';

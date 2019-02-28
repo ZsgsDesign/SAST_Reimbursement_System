@@ -35,6 +35,11 @@
                     <button id="email_submit" type="submit" class="btn btn-danger">确定</button>
                 </div>
             </form>
+            <script>
+                $('#email_submit').click(function () {
+                    setTimeout(function(){$(this).remove()},6);
+                });
+            </script>
             <{/if}>
             <{if $step==1}>
             <form id="pass_form" class="needs-validation" method="post" novalidate>
@@ -69,9 +74,5 @@
             event.stopPropagation();
             alert('新旧密码不一样');
         }
-    })
-    $('#email_submit').click(function () {
-        $('#email').attr('readonly') = true;
-        $(this).attr('disabled') = true;
     })
 </script>
